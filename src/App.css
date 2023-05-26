@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Boogaloo&family=Comic+Neue:wght@300;400;700&display=swap');
+html{
+    margin: 0;
+    padding: 0;
+}
+body {
+   background-image: linear-gradient(to bottom right,  #f0e656,  #aef8ae );
+    font-family: 'Boogaloo', cursive; ;
+    /*font-family: 'Bangers', cursive;;
+    font-family: 'Comic Neue', cursive;*/
+   
+}
+.login-btn{
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 14px;
+    /*background-color: linear-gradient(45deg, #ddaebd, #ff5940);*/
+    background-color:  #ddaebd;
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: none;
+}
+.login-btn:disabled{
+    background-color:  grey;
+    color: #fff;
+}
+.login-btn:hover{
+    background-color: linear-gradient(260deg, #ddaebd, #ff5940);
+    background-color: #ff5940;
+}
+.logoimg{
+    width: 70px;
+    height: 70px;
+}
+.btn{
+    color: #802020;
+    text-transform: uppercase;
+    font-size: 14px;
+    /*background-color: linear-gradient(45deg, #ddaebd, #ff5940);*/
+    background-color:  #ddaebd;
+    padding: 12px 30px;
+    border-radius: 30px;
+    border: none;
+}
+.authentication{
+    position:absolute;
+    top: 475px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width:360px;
+}
+.close{
+    float: right;
+    color:red;
+    margin-left: 20px;
+}
+.form-submit-btn{
+    color:#802020;
+    background-color: aqua;
+    padding: 10px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border: 1px solid black;
+}
+#main{
+    background-image: url("./assets/images/main.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 60%;
+    height: 600px;
+
+}
