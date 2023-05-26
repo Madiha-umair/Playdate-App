@@ -18,7 +18,7 @@ export default function Home() {
     /*line:23 recieving "isSignup" value from "nav.jsx"  to change its value , when user click 'log in' its value becomes 'false' */
   return (
     <div>
-    <Nav authentication={authentication}  setShowAuth= {setShowAuth} showAuth= {showAuth} setisSignup ={setisSignup}/> 
+    <Nav setShowAuth= {setShowAuth} showAuth= {showAuth} setisSignup ={setisSignup}/> 
      
     <main id="main">
 
