@@ -4,18 +4,18 @@ import Nav from "../components/Nav";
 const profile = () => {
     const [profileData, setProfileData] = useState({
         user_id: '',
-        picture:'',
-        child_name:'',
-        age:'',
-        gender:'',
-        city:'',
-        country:'',
-        language:'',
-        other_language:'',
+        picture: '',
+        child_name: '',
+        age: '',
+        gender: '',
+        city: '',
+        country: '',
+        language: '',
+        other_language: '',
         show_matches: [],
-        interest:[],
-        availability:[],
-        additional_info:'',
+        interest: [],
+        availability: [],
+        additional_info: '',
     })
 
 
@@ -24,30 +24,41 @@ const profile = () => {
     }
 
     const handleChange = (event) => {
-        const { name, options } = event.target;
-    
-        if (name === 'availability') {
-          const selectedValues = Array.from(options)
-            .filter(option => option.selected)
-            .map(option => option.value);
-    
-          setProfileData(prevState => ({
-            ...prevState,
-            [name]: [...prevState[name], ...selectedValues],
-          }));
-        } else {
-          const { value } = event.target;
-          setProfileData(prevState => ({
-            ...prevState,
-            [name]: value,
-          }));
-        }
-      };
-    
-      console.log(profileData);
 
-    
-        /* save all inputs to state*/
+        const { name, options, files } = event.target;
+
+        if (name === 'picture') {
+          const uploadedFile = files[0];
+          // Perform any necessary operations with the uploaded file here
+          console.log(uploadedFile);
+          // Update the state with the uploaded file data
+          setProfileData((prevState) => ({
+            ...prevState,
+            [name]: uploadedFile,
+          }));
+        } 
+        else if (name === 'availability' || name === 'interest') {
+            const selectedValues = Array.from(options)
+                .filter(option => option.selected)
+                .map(option => option.value);
+
+            setProfileData(prevState => ({
+                ...prevState,
+                [name]: [...prevState[name], ...selectedValues],
+            }));
+        } else {
+            const { value } = event.target;
+            setProfileData(prevState => ({
+                ...prevState,
+                [name]: value,
+            }));
+        }
+    };
+
+    console.log(profileData);
+
+
+    /* save all inputs to state*/
     return (
         <div>
             <Nav setShowAuth={() => { }} showAuth={false} />
@@ -88,24 +99,24 @@ const profile = () => {
                         <label htmlFor="interest">Interest:</label>
                         <select name="interest" id="interest" multiple value={profileData.interest} onChange={handleChange} >
                             <option value="sports">Sports</option>
-                            <option value="art">Art & Craft</option>
+                            <option value="art_and_craft">Art & Craft</option>
                             <option value="music">Music</option>
                             <option value="reading">Reading</option>
                             <option value="gardening">Gardening</option>
                             <option value="swimming">Swimming</option>
                             <option value="cycling">Cycling</option>
                             <option value="parks">Parks</option>
-                            <option value="drawing">Drawing & Painting</option>
+                            <option value="drawing_and_painting">Drawing & Painting</option>
                         </select>
 
                         <label htmlFor="availability">Availability:</label>
-<select name="availability" id="availability" multiple onChange={handleChange} value={profileData.availability}>
-  <option value="weekend">Weekend</option>
-  <option value="weekdays">Weekdays</option>
-  <option value="morning">Morning</option>
-  <option value="afternoon">Afternoon</option>
-  <option value="evening">Evening</option>
-</select>
+                        <select name="availability" id="availability" multiple value={profileData.availability} onChange={handleChange} >
+                            <option value="weekend">Weekend</option>
+                            <option value="weekdays">Weekdays</option>
+                            <option value="morning">Morning</option>
+                            <option value="afternoon">Afternoon</option>
+                            <option value="evening">Evening</option>
+                        </select>
 
                         <label htmlFor="additional_info">Additional Information:</label>
                         <textarea id="additional_info" name="additional_info" rows="4" cols="1" placeholder="Enter any other relevant information here" value={profileData.additional_info} onChange={handleChange}   ></textarea>
