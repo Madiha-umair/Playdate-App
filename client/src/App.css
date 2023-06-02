@@ -275,7 +275,7 @@ input[type="submit"]:hover {
 
 .card {
   position: relative;
-  left: 150%;
+  left: 180%;
   background-color: #fff;
   width: 80vw;
   max-width: 260px;
