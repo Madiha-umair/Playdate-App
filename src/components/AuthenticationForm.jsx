@@ -1,4 +1,9 @@
 import {useState} from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+let navigate = useNavigate();
+
 
 const AuthenticationForm = ({setShowAuth, isSignup}) => {
     const [email, setEmail] =useState(null);
@@ -13,14 +18,19 @@ const AuthenticationForm = ({setShowAuth, isSignup}) => {
     }
 
 
-    const submitFunc = (e) => {
+    const submitFunc = async(e) => {
         e.preventDefault()
         try{
             if(isSignup && (password !== confirmPassword))
             {
                 setError("Password not matching!");
+                return
             }
-            console.log("sign up request");
+            const response = await axios.post('http://localhost:8888/users', {email,password});
+
+            const success = response.status === 201
+
+            if(success) navigate('/dashboard')
         }
         catch (error)
         {
