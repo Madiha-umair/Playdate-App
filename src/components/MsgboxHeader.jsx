@@ -7,7 +7,7 @@ export default function MsgboxHeader () {
             </div>
             <h3>UserName</h3>
         </div>
-            <i className="logoutIcon">X</i>
+            <i className="logoutIcon">GO BACK [X]</i>
       </div>
     );
   }
