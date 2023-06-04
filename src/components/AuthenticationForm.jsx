@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 const AuthenticationForm = ({ setShowAuth, isSignup }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
 
   let navigate = useNavigate();
 
@@ -26,9 +28,12 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
         password,
       });
 
+      setCookie('Email',response.data.email);
+      setCookie('UserId',response.data.userId);
+      setCookie('AuthToken', response.data.token)
       const success = response.status === 201;
 
-      if (success) navigate('/dashboard');
+      if (success) navigate('/profile');
     } catch (error) {
       console.log(error);
     }
