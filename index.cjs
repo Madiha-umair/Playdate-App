@@ -46,7 +46,7 @@ app.post('/signup', async (req, res) => {
       expiresIn: '12h',
     });
 
-    res.status(201).json({ token, userId: uniqueUserId, email: filteredEmail });
+    res.status(201).json({ token, userId: uniqueUserId });
   } catch (err) {
     console.error(err); // Log the error to the console
     res.status(500).send('Internal Server Error');
@@ -78,7 +78,7 @@ app.post('/login', async (req, res) => {
       });
 
   
-      res.status(201).json({ token, userId: validUser.user_id, email });
+      res.status(201).json({ token, userId: validUser.user_id});
     } else {
       console.log('Invalid password for email:', email);
       res.status(400).send('Invalid email or password');
@@ -106,6 +106,43 @@ app.get('/users', async (req, res) => {
   } finally {
     await client.close();
   }
+});
+
+//for updating a user
+application.Put('/user', async (req,res) => {
+  const client = new MongoClient (uri);
+  const formData = req.body.formData;
+
+  try{
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users= database.collections('users');
+
+    const query = { user_id:formData.user_id}
+    const updateDocument = {
+      $set: {
+        picture: formData.picture,
+        child_name: formData.child_name,
+        age: formData.age,
+        gender: formData.gender,
+        city: formData.city,
+        country: formData.country,
+        language: formData.language,
+        other_language: formData.other_language,
+        show_matches: formData.show_matches,
+        interest: formData.interest,
+        availability: formData.availability,
+        additional_info: formData.additional_info,
+      }
+    } 
+      const newUser = await users.updateOne(query, updateDocument);
+      res.send(newUser);
+  } finally
+  {
+    await client.close();
+  }
+
+
 });
 
 app.listen(PORT, function () {

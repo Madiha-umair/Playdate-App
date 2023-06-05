@@ -29,9 +29,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
         password
       });
 
-      setCookie('Email',response.data.email);
+      setCookie('AuthToken', response.data.token);
       setCookie('UserId',response.data.userId);
-      setCookie('AuthToken', response.data.token)
       const success = response.status === 201;
 
       if (success && isSignup) navigate('/profile');

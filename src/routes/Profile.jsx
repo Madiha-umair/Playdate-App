@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import Nav from "../components/Nav";
+import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 const profile = () => {
+    const [cookies, setCookie, removeCookie] = useCookies(['user']);
     const [profileData, setProfileData] = useState({
-        user_id: '',
+        user_id: cookies.UserId,
         picture: '',
         child_name: '',
         age: '',
@@ -18,7 +21,7 @@ const profile = () => {
         additional_info: '',
     })
 
-
+    //lets populate the db
     const onSubmit = () => {
         console.log('Submitted!');
     }
