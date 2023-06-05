@@ -5,8 +5,8 @@ export default function msgInput() {
 
     return (
         <div className="msgInput">
-            <textarea value={textArea} eventHandle={(e) => setTextArea(e.target.value)}/>
-            <button clasName="form-submit-btn ">Submit </button>
+            <textarea value={textArea} onChange={(e) => setTextArea(e.target.value)}/>
+            <button className="form-submit-btn ">Submit </button>
       </div>
     );
   }

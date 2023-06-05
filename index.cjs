@@ -55,6 +55,42 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    const validUser = await users.findOne({ email });
+
+    if (!validUser) {
+      console.log('Invalid email:', email);
+      return res.status(400).send('Invalid email or password');
+    }
+
+    const validPassword = await bcrypt.compare(password, validUser.hashed_password);
+
+    if (validPassword) {
+      const token = jwt.sign(validUser, email, {
+        expiresIn: '12h',
+      });
+
+  
+      res.status(201).json({ token, userId: validUser.user_id, email });
+    } else {
+      console.log('Invalid password for email:', email);
+      res.status(400).send('Invalid email or password');
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).send(`An error occurred: ${err.message}`);
+  } finally {
+    await client.close();
+  }
+});
+
 app.get('/users', async (req, res) => {
   const client = new MongoClient(uri);
 

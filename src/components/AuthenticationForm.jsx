@@ -23,9 +23,10 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
         setError('Password not matching!');
         return;
       }
-      const response = await axios.post('http://localhost:8888/signup', {
+      const url = isSignup ? 'signup' : 'login';
+      const response = await axios.post(`http://localhost:8888/${url}`, {
         email,
-        password,
+        password
       });
 
       setCookie('Email',response.data.email);
@@ -33,7 +34,9 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
       setCookie('AuthToken', response.data.token)
       const success = response.status === 201;
 
-      if (success) navigate('/profile');
+      if (success && isSignup) navigate('/profile');
+      if (success && !isSignup) navigate ('/dashboard');
+
     } catch (error) {
       console.log(error);
     }
