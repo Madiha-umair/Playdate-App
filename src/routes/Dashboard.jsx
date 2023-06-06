@@ -1,11 +1,13 @@
 import TinderCard from 'react-tinder-card';
 import Messages from "../components/Messages";
 import '@react-spring/web';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {useCookies} from 'react-cookie';
+import axios from 'axios';
 
 
 const Dashboard = () => {
-    const [profileData, setProfileData] = useState({
+    const [user, setUser] = useState({
         user_id: '',
         picture: '',
         child_name: '',
@@ -21,26 +23,46 @@ const Dashboard = () => {
         additional_info: '',
     })
 
+    const [cookies, setCookies, removeCookie ] = useCookies (['user'])
+    const userId = cookies.UserId;
+    const getUser = async () => {
+        try{
+            const response = await axios.get('http://localhost:8888/user',{ params: {userId}})
+            setUser(response.data)
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+    useEffect(() =>{
+        getUser()
+    }, [])  // array empty to receive only 1 time
+
+    console.log ('here is the users', user)
+    
+
+
+
     const characters = [
         {
             name: 'Richard Hendricks',
-            url: profileData.picture ? URL.createObjectURL(profileData.picture) : null,
+            url: user.picture ? (user.picture) : null,
         },
         {
             name: 'Erlich Bachman',
-            url: profileData.picture ? URL.createObjectURL(profileData.picture) : null,
+            url: user.picture ? (user.picture) : null,
         },
         {
             name: 'Monica Hall',
-            url: profileData.picture ? URL.createObjectURL(profileData.picture) : null,
+            url: user.picture ? (user.picture) : null,
         },
         {
             name: 'Jared Dunn',
-            url: profileData.picture ? URL.createObjectURL(profileData.picture) : null,
+            url: user.picture ?(user.picture) : null,
         },
         {
             name: 'Dinesh Chugtai',
-            url: profileData.picture ? URL.createObjectURL(profileData.picture) : null,
+            url: user.picture ? (user.picture) : null,
         }
     ]
     const [lastDirection, setLastDirection] = useState()
@@ -54,8 +76,10 @@ const Dashboard = () => {
         console.log(name + ' left the screen!')
     }
     return (
+        <div>
+            { user &&
         <div className="dashboard">
-            <Messages />
+            <Messages user ={user} />
             <div className="movetoNext">
                 <div className="cardContanier">
 
@@ -75,7 +99,8 @@ const Dashboard = () => {
                 </div>
             </div>
         </div>
-
-    )
 }
+        </div>
+    )
+                    }
 export default Dashboard

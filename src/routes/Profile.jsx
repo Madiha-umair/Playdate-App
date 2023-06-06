@@ -25,21 +25,23 @@ const profile = () => {
     let navigate = useNavigate();
 
     //lets populate the db
-   const onSubmit = (e) => {
-  e.preventDefault(); // Corrected the typo
+    const submitHandler = async (event) => {
+        console.log('Form has been submitted!');
+        event.preventDefault();
+      
+        try {
+          const response = await axios.put('http://localhost:8888/user', profileData);
+          console.log(response);
+          const success = response.status === 200;
+          if (success) navigate('/dashboard');
+        } catch (err) {
+          console.log(err);
+        }
+      }
 
-  try {
-    const response = axios.put('http://localhost:8000/user', { formData });
-    console.log(response);
-    const success = response.status === 200;
-    if (success) navigate('/dashboard');
-  } catch (err) {
-    console.log(err);
-  }
-
-}
+  
     const eventHandler = (event) => {
-
+        console.log('event', event)
         const { name, options, files } = event.target;
 
         if (name === 'picture') {
@@ -79,7 +81,7 @@ const profile = () => {
             <Nav setShowAuth={() => { }} showAuth={false} />
             <div className="profile">
                 <h2>Create Account</h2>
-                <form >
+                <form  onSubmit={submitHandler}>
                     <section>
                         <label htmlFor="picture">Upload Picture:</label>
                         <input type="file" id="picture" name="picture" accept="image/*" onChange={eventHandler} />
@@ -134,7 +136,7 @@ const profile = () => {
                         </select>
 
                         <label htmlFor="additional_info">Additional Information:</label>
-                        <textarea id="additional_info" name="additional_info" rows="4" cols="1" placeholder="Enter any other relevant information here" value={profileData.additional_info} onChange={eventHandler}   ></textarea>
+                        <textarea id="additional_info" name="additional_info" rows="4" cols="1" placeholder="Enter any other relevant information here" value={profileData.additional_info || ''} onChange={eventHandler}   ></textarea>
 
                         <input type="submit" />
                     </section>

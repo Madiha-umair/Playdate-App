@@ -2,20 +2,28 @@ import './App.css'
 import {BrowserRouter, Routes, Route} from "react-router-dom";
 import Header from "./components/Header";
 
+
 //import page content
 import Home from "./routes/Home";
 import Dashboard from "./routes/Dashboard";
 import Profile from "./routes/Profile";
-
+import { useCookies } from 'react-cookie';
 
 function App() {
+
+  const [cookies, setCookies, removeCookie ] = useCookies (['user'])
+
+  const authToken = cookies.AuthToken
+
   return (
     <div className="App">
       <BrowserRouter>
       <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
+          {authToken && <Route path="/dashboard" element={<Dashboard />} />}
+          {authToken &&<Route path="/profile" element={<Profile />} />}
+
+          window.location.reload();  
       </Routes>
       <Header />
       </BrowserRouter>

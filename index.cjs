@@ -108,42 +108,59 @@ app.get('/users', async (req, res) => {
   }
 });
 
-//for updating a user
-app.put('/user', async (req,res) => {
-  const client = new MongoClient (uri);
-  const formData = req.body.formData;
+app.get('/user', async(req,res)=>{
+  const client = new MongoClient(uri);
+  const userId = req.query.userId;
 
   try{
     await client.connect();
-    const database = client.db('playpal-data');
-    const users= database.collections('users');
+    const database = client.db('playpal-data')
+    const users = database.collection('users')
 
-    const query = { user_id:formData.user_id}
-    const updateDocument = {
-      $set: {
-        picture: formData.picture,
-        child_name: formData.child_name,
-        age: formData.age,
-        gender: formData.gender,
-        city: formData.city,
-        country: formData.country,
-        language: formData.language,
-        other_language: formData.other_language,
-        show_matches: formData.show_matches,
-        interest: formData.interest,
-        availability: formData.availability,
-        additional_info: formData.additional_info,
-      },
-    } 
-      const newUser = await users.updateOne(query, updateDocument);
-      res.send(newUser);
-  } finally
-  {
+    const query = {user_id: userId}
+    const user = await users.findOne(query)
+    res.send(user)
+  } finally{
     await client.close();
   }
 
+}
+)
 
+//for updating a user
+app.put('/user', async (req, res) => {
+  const client = new MongoClient(uri);
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+
+    const query = { user_id: req.body.user_id };
+    const updateDocument = {
+      $set: {
+        picture: req.body.picture,
+        child_name: req.body.child_name,
+        age: req.body.age,
+        gender: req.body.gender,
+        city: req.body.city,
+        country: req.body.country,
+        language: req.body.language,
+        other_language: req.body.other_language,
+        show_matches: req.body.show_matches,
+        interest: req.body.interest,
+        availability: req.body.availability,
+        additional_info: req.body.additional_info,
+      },
+    };
+
+    const newUser = await users.updateOne(query, updateDocument);
+    res.send(newUser);
+  } finally {
+    await client.close();
+  }
 });
+
 
 app.listen(PORT, function () {
   console.log('Server listening on port ' + PORT);

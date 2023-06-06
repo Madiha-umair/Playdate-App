@@ -1,13 +1,22 @@
-export default function MsgboxHeader () {
-    return (
+import {useCookies } from 'react-cookie'
+
+export default function MsgboxHeader ({user}) {
+  
+  const logout = () =>{
+    removeCookie('UserId',cookies.UserId);
+    removeCookie('AuthToken', AuthToken)
+    window.location.reload();  
+  } 
+  
+  return (
       <div className="msgboxHeader">
         <div className="profileContainer">
             <div className="imgContainer">
-                <img src="" />
+                <img src={user.picture} alt = { "profile picture of" + user.child_name} />
             </div>
-            <h3>UserName</h3>
+            <h3>{user.child_name}</h3>
         </div>
-            <i className="logoutIcon">GO BACK [X]</i>
+            <i className="logoutIcon" onClick={logout}>GO BACK [X]</i>
       </div>
     );
   }
