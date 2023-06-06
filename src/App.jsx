@@ -23,7 +23,7 @@ function App() {
           {authToken && <Route path="/dashboard" element={<Dashboard />} />}
           {authToken &&<Route path="/profile" element={<Profile />} />}
 
-          window.location.reload();  
+         
       </Routes>
       <Header />
       </BrowserRouter>

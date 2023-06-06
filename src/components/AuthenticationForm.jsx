@@ -36,6 +36,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
       if (success && isSignup) navigate('/profile');
       if (success && !isSignup) navigate ('/dashboard');
 
+      window.location.reload();  
+
     } catch (error) {
       console.log(error);
     }

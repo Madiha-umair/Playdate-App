@@ -1,10 +1,12 @@
 import {useCookies } from 'react-cookie'
 
 export default function MsgboxHeader ({user}) {
+
+  const [ cookies, setCookie, removeCookie ] = useCookies(['user'])
   
   const logout = () =>{
     removeCookie('UserId',cookies.UserId);
-    removeCookie('AuthToken', AuthToken)
+    removeCookie('AuthToken', cookies.AuthToken)
     window.location.reload();  
   } 
   
