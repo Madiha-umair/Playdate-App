@@ -109,7 +109,7 @@ app.get('/users', async (req, res) => {
 });
 
 //for updating a user
-application.Put('/user', async (req,res) => {
+app.put('/user', async (req,res) => {
   const client = new MongoClient (uri);
   const formData = req.body.formData;
 
@@ -133,7 +133,7 @@ application.Put('/user', async (req,res) => {
         interest: formData.interest,
         availability: formData.availability,
         additional_info: formData.additional_info,
-      }
+      },
     } 
       const newUser = await users.updateOne(query, updateDocument);
       res.send(newUser);

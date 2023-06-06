@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Nav from "../components/Nav";
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import axios from'axios';
 
 const profile = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['user']);
@@ -21,11 +22,22 @@ const profile = () => {
         additional_info: '',
     })
 
-    //lets populate the db
-    const onSubmit = () => {
-        console.log('Submitted!');
-    }
+    let navigate = useNavigate();
 
+    //lets populate the db
+   const onSubmit = (e) => {
+  e.preventDefault(); // Corrected the typo
+
+  try {
+    const response = axios.put('http://localhost:8000/user', { formData });
+    console.log(response);
+    const success = response.status === 200;
+    if (success) navigate('/dashboard');
+  } catch (err) {
+    console.log(err);
+  }
+
+}
     const eventHandler = (event) => {
 
         const { name, options, files } = event.target;
