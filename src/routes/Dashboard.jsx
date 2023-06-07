@@ -29,27 +29,27 @@ const Dashboard = () => {
     const userId = cookies.UserId;
 
     const getUser = async () => {
-        try{
-            const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } })      
-            setUser(response.data);
-        }
-        catch(error){
-            console.log(error);
-        }
-    }
-
-    const getMatchedUsers = async () => {
         try {
-          console.log("user?.show_matches:", user?.show_matches);
-          const response = await axios.get("http://localhost:8888/matched-users", {
-            params: { city: user?.show_matches }
-          });
-          setMatchedUsers(response.data);
+          const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } });
+          setUser(response.data);
         } catch (error) {
-          console.log(error);
+          console.log(error.message);
         }
       };
-    
+
+      const getMatchedUsers = async () => {
+        try {
+          if (user && user.show_matches) {
+            console.log("user?.show_matches:", user.show_matches);
+            const response = await axios.get("http://localhost:8888/matched-users", {
+              params: { city: user.show_matches }
+            });
+            setMatchedUsers(response.data);
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
 
         useEffect(() => {
             const fetchData = async () => {
@@ -60,26 +60,25 @@ const Dashboard = () => {
             fetchData();
           }, [])
     
-        useEffect(() => {
-            if (user) {
-                getMatchedUsers()
+          useEffect(() => {
+            if (user && user.show_matches) {
+              getMatchedUsers();
             }
-        }, [user])  // array[] is  empty to receive only 1 time
+          }, [user]);  // array[] is  empty to receive only 1 time
 
     console.log ('here is the matched users', matchedUsers)
     
     const updateMatches = async (matchedUserId) => {
-        try{
-             await axios.put("http://localhost:8888/addmatch", {
-                userId,
-                matchedUserId
-            }) 
-            getUser();
-    } catch (err)
-    {
-        console.log("Error", err);
-    }
-}
+        try {
+          await axios.put("http://localhost:8888/addmatch", {
+            userId,
+            matchedUserId
+          });
+          getUser();
+        } catch (error) {
+          console.log("Error", error.message);
+        }
+      };
 
     console.log(user);
 
@@ -99,7 +98,7 @@ const Dashboard = () => {
 
     const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
 
-    const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.usere_id));
+    const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
     console.log('filteredCityUsers ', filteredCityUsers);
 
 
