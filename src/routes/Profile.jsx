@@ -2,86 +2,93 @@ import { useState } from 'react';
 import Nav from "../components/Nav";
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import axios from'axios';
+import axios from 'axios';
 
 const profile = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['user']);
-    const [profileData, setProfileData] = useState({
-        user_id: cookies.UserId,
-        picture: '',
-        child_name: '',
-        age: '',
-        gender: '',
-        city: '',
-        country: '',
-        language: '',
-        other_language: '',
-        show_matches: [],
-        interest: [],
-        availability: [],
-        additional_info: '',
-    })
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [profileData, setProfileData] = useState({
+    user_id: cookies.UserId,
+    picture: '',
+    child_name: '',
+    age: '',
+    gender: '',
+    city: '',
+    country: '',
+    language: '',
+    other_language: '',
+    show_matches: '',
+    interest: [],
+    availability: [],
+    additional_info: '',
+  });
 
-    let navigate = useNavigate();
+  let navigate = useNavigate();
 
-    //lets populate the db
-    const submitHandler = async (event) => {
-        console.log('Form has been submitted!');
-        event.preventDefault();
-      
-        try {
-          const response = await axios.put('http://localhost:8888/user', profileData);
-          console.log(response);
-          const success = response.status === 200;
-          if (success) navigate('/dashboard');
-        } catch (err) {
-          console.log(err);
+  const submitHandler = async (event) => {
+    event.preventDefault();
+
+    try {
+      const formData = new FormData();
+      formData.append('picture', profileData.picture);
+
+      for (const key in profileData) {
+        if (key !== 'picture') {
+          formData.append(key, profileData[key]);
         }
       }
 
-  
-    const eventHandler = (event) => {
-        console.log('event', event)
-        const { name, options, files } = event.target;
+      const response = await axios.put('http://localhost:8888/user', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
-        if (name === 'picture') {
-          const uploadedFile = files[0];
-          // Perform any necessary operations with the uploaded file here
-          console.log(uploadedFile);
-          // Update the state with the uploaded file data
-          setProfileData((prevState) => ({
-            ...prevState,
-            [name]: uploadedFile,
-          }));
-        } 
-        else if (name === 'availability' || name === 'interest') {
-            const selectedValues = Array.from(options)
-                .filter(option => option.selected)
-                .map(option => option.value);
+      console.log(response);
+      const success = response.status === 200;
+      if (success) navigate('/dashboard');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-            setProfileData(prevState => ({
-                ...prevState,
-                [name]: [...prevState[name], ...selectedValues],
-            }));
-        } else {
-            const { value } = event.target;
-            setProfileData(prevState => ({
-                ...prevState,
-                [name]: value,
-            }));
-        }
-    };
+  const eventHandler = (event) => {
+    console.log('event', event);
+    const { name, options, files } = event.target;
 
-    console.log(profileData);
+    if (name === 'picture') {
+      const uploadedFile = files[0];
+      console.log(uploadedFile);
+      setProfileData((prevState) => ({
+        ...prevState,
+        [name]: uploadedFile,
+      }));
+    } else if (name === 'availability' || name === 'interest') {
+      const selectedValues = Array.from(options)
+        .filter((option) => option.selected)
+        .map((option) => option.value);
 
+      setProfileData((prevState) => ({
+        ...prevState,
+        [name]: [...prevState[name], ...selectedValues],
+      }));
+    } else {
+      const { value } = event.target;
+      setProfileData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
+  };
 
-    /* save all inputs to state*/
-    return (
-        <div>
-            <Nav setShowAuth={() => { }} showAuth={false} />
-            <div className="profile">
-                <h2>Create Account</h2>
-                <form  onSubmit={submitHandler}>
+  console.log(profileData);
+
+  return (
+    <div>
+      <Nav setShowAuth={() => { }} showAuth={false} />
+      <div className="profile">
+        <h2>Create Account</h2>
+        <form onSubmit={submitHandler}>
+
                     <section>
                         <label htmlFor="picture">Upload Picture:</label>
                         <input type="file" id="picture" name="picture" accept="image/*" onChange={eventHandler} />

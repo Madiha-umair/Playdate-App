@@ -17,64 +17,92 @@ const Dashboard = () => {
         country: '',
         language: '',
         other_language: '',
-        show_matches: [],
+        show_matches: '',
         interest: [],
         availability: [],
         additional_info: '',
     })
 
+    const [matchedUsers, setMatchedUsers] = useState(null)
+    const [lastDirection, setLastDirection] = useState()
     const [cookies, setCookies, removeCookie ] = useCookies (['user'])
     const userId = cookies.UserId;
+
     const getUser = async () => {
         try{
-            const response = await axios.get('http://localhost:8888/user',{ params: {userId}})
-            setUser(response.data)
+            const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } })      
+            setUser(response.data);
         }
         catch(error){
-            console.log(error)
+            console.log(error);
         }
     }
-    useEffect(() =>{
-        getUser()
-    }, [])  // array empty to receive only 1 time
 
-    console.log ('here is the users', user)
+    const getMatchedUsers = async () => {
+        try {
+          console.log("user?.show_matches:", user?.show_matches);
+          const response = await axios.get("http://localhost:8888/matched-users", {
+            params: { city: user?.show_matches }
+          });
+          setMatchedUsers(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
     
 
+        useEffect(() => {
+            const fetchData = async () => {
+              await getUser();
+              getMatchedUsers();
+            };
+          
+            fetchData();
+          }, [])
+    
+        useEffect(() => {
+            if (user) {
+                getMatchedUsers()
+            }
+        }, [user])  // array[] is  empty to receive only 1 time
 
+    console.log ('here is the matched users', matchedUsers)
+    
+    const updateMatches = async (matchedUserId) => {
+        try{
+             await axios.put("http://localhost:8888/addmatch", {
+                userId,
+                matchedUserId
+            }) 
+            getUser();
+    } catch (err)
+    {
+        console.log("Error", err);
+    }
+}
 
-    const characters = [
+    console.log(user);
+
+    const swiped = (direction, swipedUserId) => {
+
+        if(direction === 'right')
         {
-            name: 'Richard Hendricks',
-            url: user.picture ? (user.picture) : null,
-        },
-        {
-            name: 'Erlich Bachman',
-            url: user.picture ? (user.picture) : null,
-        },
-        {
-            name: 'Monica Hall',
-            url: user.picture ? (user.picture) : null,
-        },
-        {
-            name: 'Jared Dunn',
-            url: user.picture ?(user.picture) : null,
-        },
-        {
-            name: 'Dinesh Chugtai',
-            url: user.picture ? (user.picture) : null,
+            updateMatches(swipedUserId);
         }
-    ]
-    const [lastDirection, setLastDirection] = useState()
-
-    const swiped = (direction, nameToDelete) => {
-        console.log('removing: ' + nameToDelete)
-        setLastDirection(direction)
+        
+        setLastDirection(direction);
     }
 
     const outOfFrame = (name) => {
         console.log(name + ' left the screen!')
     }
+
+    const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
+
+    const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.usere_id));
+    console.log('filteredCityUsers ', filteredCityUsers);
+
+
     return (
         <div>
             { user &&
@@ -83,13 +111,13 @@ const Dashboard = () => {
             <div className="movetoNext">
                 <div className="cardContanier">
 
-                    {characters.map((character) =>
+                    {filteredCityUsers?.map((matchedUser) =>
                         <TinderCard className='swipe'
-                            key={character.name}
-                            onSwipe={(dir) => swiped(dir, character.name)}
-                            onCardLeftScreen={() => outOfFrame(character.name)}>
-                            <div style={{ backgroundImage: character.url ? `url(${character.url})` : 'none', }} className="card">
-                                <h3>{character.name}</h3>
+                            key={matchedUser.child_name}
+                            onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
+                            onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
+                            <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
+                                <h3>{matchedUser.child_name}</h3>
                             </div>
                         </TinderCard>
                     )}
