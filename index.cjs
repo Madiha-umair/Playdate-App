@@ -212,9 +212,29 @@ app.get('/addmatch', async (req, res) => {
 } finally {
     await client.close();
 }
-
-
 })
+
+
+app.get('/users', async(req,res) =>{
+  const client = new MongoClient(uri);
+  const userIds = JSON.parse(req.query.userIds);
+  console.log(userIds);
+
+  try{
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+  
+    const usersArray = [{ '$match': {'user_id': {'$in': userIds}
+    }}]
+  
+  
+  } finally{
+    await client.close();
+  }
+})
+
+
 
 
 app.listen(PORT, function () {
