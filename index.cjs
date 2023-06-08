@@ -78,8 +78,8 @@ app.post('/login', async (req, res) => {
         expiresIn: '12h',
       });
 
-  
-      res.status(201).json({ token, userId: validUser.user_id});
+
+      res.status(201).json({ token, userId: validUser.user_id });
     } else {
       console.log('Invalid password for email:', email);
       res.status(400).send('Invalid email or password');
@@ -119,15 +119,15 @@ app.get('/matched-users', async (req, res) => {
     return res.status(400).send('Missing city parameter');
   }
 
-  try{
+  try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = {show_matches: city};
+    const query = { show_matches: city };
 
     const listOfMatchedUsers = await users.find(query).toArray();
     res.send(listOfMatchedUsers);
-  } finally{
+  } finally {
     await client.close();
   }
 
@@ -197,39 +197,45 @@ app.put('/user', upload.single('picture'), async (req, res) => {
 
 app.get('/addmatch', async (req, res) => {
   const client = new MongoClient(uri);
-  const {userId, matchedUserId} = req.body;
+  const { userId, matchedUserId } = req.body;
 
-  try{
+  try {
     await client.connect();
-    const database = client.db(playpal-data);
+    const database = client.db(playpal - data);
     const users = database.collection('users');
 
-    const query = {user_id: userId}
-    const updateDocument = { $push: { matches: {usere_id: matchedUserId}}
+    const query = { user_id: userId }
+    const updateDocument = {
+      $push: { matches: { usere_id: matchedUserId } }
     }
     const user = await users.updateOne(query, updateDocument)
     res.send(user);
-} finally {
+  } finally {
     await client.close();
-}
+  }
 })
 
 
-app.get('/users', async(req,res) =>{
+app.get('/users', async (req, res) => {
   const client = new MongoClient(uri);
   const userIds = JSON.parse(req.query.userIds);
   console.log(userIds);
 
-  try{
+  try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-  
-    const usersArray = [{ '$match': {'user_id': {'$in': userIds}
-    }}]
-  
-  
-  } finally{
+
+    const usersArray = [{
+      '$match': {
+        'user_id': { '$in': userIds }
+      }
+    }]
+    const foundUsers = await users.aggregate(usersArray).toArray();
+    console.log(foundUsers);
+    res.send(foundUsers);
+
+  } finally {
     await client.close();
   }
 })

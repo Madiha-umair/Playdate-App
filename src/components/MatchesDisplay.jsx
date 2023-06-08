@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {useState} from 'react';
 
-export default function MatchesDisplay({matches}) {
+export default function MatchesDisplay({matches, setSelectedUser}) {
 
     const [matchedProfiles, setMatchedProfiles] = useState (null);
     const matchedUserIds = matches.map(({user_id}) => user_id);
@@ -22,7 +22,14 @@ export default function MatchesDisplay({matches}) {
 
     return (
       <div className="matchesDisplay">
-        
+        {matchedProfiles?.map((match, _index) =>(   // if matchprofiles exist then map each match on an index
+          <div key ={_index} className="matchCard" onClick={()=>setSelectedUser(match)}>
+            <div className="imageContainer">
+              <img src={match?.picture} alt={match?.child_name + 'profile'}/>
+              <h3>{match?.child_name}</h3>
+              </div>
+          </div>
+        ))}
       </div>
     );
   }

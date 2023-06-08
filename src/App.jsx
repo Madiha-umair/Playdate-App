@@ -1,5 +1,5 @@
 import './App.css'
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
 
 
@@ -7,25 +7,26 @@ import Header from "./components/Header";
 import Home from "./routes/Home";
 import Dashboard from "./routes/Dashboard";
 import Profile from "./routes/Profile";
+import AdminDashboard from "./routes/AdminDashboard";
 import { useCookies } from 'react-cookie';
 
 function App() {
 
-  const [cookies, setCookies, removeCookie ] = useCookies (['user'])
+  const [cookies, setCookies, removeCookie] = useCookies(['user'])
 
   const authToken = cookies.AuthToken
 
   return (
     <div className="App">
       <BrowserRouter>
-      <Routes>
+        <Routes>
           <Route path="/" element={<Home />} />
           {authToken && <Route path="/dashboard" element={<Dashboard />} />}
-          {authToken &&<Route path="/profile" element={<Profile />} />}
+          {authToken && <Route path="/profile" element={<Profile />} />}
+          {authToken && <Route path="/admin" element={<AdminDashboard />} />}
 
-         
-      </Routes>
-      <Header />
+        </Routes>
+        <Header />
       </BrowserRouter>
     </div>
   )
