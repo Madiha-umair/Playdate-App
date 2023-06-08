@@ -23,7 +23,7 @@ function App() {
           <Route path="/" element={<Home />} />
           {authToken && <Route path="/dashboard" element={<Dashboard />} />}
           {authToken && <Route path="/profile" element={<Profile />} />}
-          {authToken && <Route path="/admin" element={<AdminDashboard />} />}
+          <Route path="/admindashboard" element={<AdminDashboard />} />
 
         </Routes>
         <Header />

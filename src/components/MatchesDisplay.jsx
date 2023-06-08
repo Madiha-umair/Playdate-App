@@ -1,10 +1,13 @@
 import axios from 'axios';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import { useCookies } from "react-cookie";
 
 export default function MatchesDisplay({matches, setSelectedUser}) {
 
     const [matchedProfiles, setMatchedProfiles] = useState (null);
     const matchedUserIds = matches.map(({user_id}) => user_id);
+
+
     const getMatches = async() => {
       try {
         const response = await axios.get('http://localhost:8888/users', {

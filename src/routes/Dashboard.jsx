@@ -1,83 +1,65 @@
 import TinderCard from 'react-tinder-card';
 import Messages from "../components/Messages";
-import '@react-spring/web';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
 
-
 const Dashboard = () => {
-  const [user, setUser] = useState({
-    user_id: '',
-    picture: '',
-    child_name: '',
-    age: '',
-    gender: '',
-    city: '',
-    country: '',
-    language: '',
-    other_language: '',
-    show_matches: '',
-    interest: [],
-    availability: [],
-    additional_info: '',
-  })
-
-  const [matchedUsers, setMatchedUsers] = useState(null)
-  const [lastDirection, setLastDirection] = useState()
-  const [cookies, setCookies, removeCookie] = useCookies(['user'])
+  const [user, setUser] = useState(null);
+  const [matchedUsers, setMatchedUsers] = useState(null);
+  const [lastDirection, setLastDirection] = useState(null);
+  const [cookies, setCookies, removeCookie] = useCookies(['user']);
   const userId = cookies.UserId;
 
-
-  //************ */ function for getting the current userId **************************
   const getUser = async () => {
     try {
       const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } });
       setUser(response.data);
+      console.log("Current user:", response.data);
     } catch (error) {
-      console.log(error.message);
+      console.log('Error fetching user:', error.message);
     }
   };
+  console.log("I am outside getUser user:", user);
 
 
-  // *********function finding matching users ************
+
+
   const getMatchedUsers = async () => {
+
+    //console.log("I AM HERE " + user);
     try {
-      if (user && user.show_matches) {
-        console.log("user?.show_matches:", user.show_matches);
-        const response = await axios.get("http://localhost:8888/matched-users", {
-          params: { city: user.show_matches }  // in response only those users will show having "city=show_matches"
-        });
-        setMatchedUsers(response.data);   // now matchingUser have only data of user having same city
-
-      }
-      console.log("Matched users are:" + matchedUser);
+      //console.log("show city " + user);
+      //console.log("show city2 " + user.city);
+     /* if (!user || !user.city) {
+        // Handle case when user or user.city is not available
+        return;
+      }*/
+  
+      const response = await axios.get('http://localhost:8888/matched-users', {
+        params: { city: user?.show_matches }
+      });
+      
+      setMatchedUsers(response.data);
+      //console.log("this is should be array:" +response.data);
+      console.log("this is should be array:", JSON.stringify(response.data));
+      
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
-  }
-
-  // fetching data using useEffect
+  };
+  
   useEffect(() => {
-    const fetchData = async () => {
-      await getUser();
-      getMatchedUsers();
-    };
+    getUser();
+    getMatchedUsers();
+  }, [user, matchedUsers]);
 
-    fetchData();
-  }, [])
-
-
-  useEffect(() => {
-    if (user && user.show_matches) {
-      getMatchedUsers();
-    }
-  }, [user]);  // array[] is  empty to receive only 1 time
-
-  console.log('here is the matched users', matchedUsers)
+    console.log("Updated user4:", user);
+    console.log("Updated user4:", matchedUsers);
 
 
-  // *********function for updating matches  ************
+
+
   const updateMatches = async (matchedUserId) => {
     try {
       await axios.put("http://localhost:8888/addmatch", {
@@ -86,59 +68,57 @@ const Dashboard = () => {
       });
       getUser();
     } catch (error) {
-      console.log("Error", error.message);
+      console.log("Error updating matches:", error.message);
     }
   };
 
-  console.log(user);
-
-
-  // *********function for swiping the matches to left or right  ************
   const swiped = (direction, swipedUserId) => {
-
     if (direction === 'right') {
       updateMatches(swipedUserId);
     }
 
     setLastDirection(direction);
-  }
+  };
 
   const outOfFrame = (name) => {
-    console.log(name + ' left the screen!')
-  }
+    console.log(name + ' left the screen!');
+  };
 
-  const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
+  const matchedUserIds = (user?.matches || []).map(({ user_id }) => user_id).concat(userId);
 
   const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
-  console.log('filteredCityUsers ', filteredCityUsers);
-
 
   return (
     <div>
-      {user &&
+      {user && user.user_id && (
         <div className="dashboard">
           <Messages user={user} />
           <div className="movetoNext">
             <div className="cardContanier">
-
-              {filteredCityUsers?.map((matchedUser) =>
-                <TinderCard className='swipe'
+              {filteredCityUsers?.map((matchedUser) => (
+                <TinderCard
+                  className='swipe'
                   key={matchedUser.child_name}
                   onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
-                  onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-                  <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
+                  onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}
+                >
+                  <div
+                    style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none' }}
+                    className="card"
+                  >
                     <h3>{matchedUser.child_name}</h3>
                   </div>
                 </TinderCard>
-              )}
+              ))}
               <div className="swipeInfo">
-                {lastDirection ? <p> you swiped {lastDirection}</p> : <p />}
+                {lastDirection ? <p>You swiped {lastDirection}</p> : null}
               </div>
             </div>
           </div>
         </div>
-      }
+      )}
     </div>
-  )
-}
-export default Dashboard
+  );
+};
+
+export default Dashboard;

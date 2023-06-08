@@ -17,6 +17,23 @@ app.get('/', function (req, res) {
   res.json('Hello to my app');
 });
 
+
+// Create a multer instance with the desired configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads'); // Specify the destination folder for storing uploaded files
+  },
+  filename: function (req, file, cb) {
+    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
+    cb(null, uniqueFileName); // Set the filename for the uploaded file
+  },
+});
+
+
+
+// Create a multer upload instance
+const upload = multer({ storage });
+
 app.post('/signup', async (req, res) => {
   const { email, password } = req.body;
   const uniqueUserId = uuidv4();
@@ -78,7 +95,6 @@ app.post('/login', async (req, res) => {
         expiresIn: '12h',
       });
 
-
       res.status(201).json({ token, userId: validUser.user_id });
     } else {
       console.log('Invalid password for email:', email);
@@ -92,15 +108,18 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/users', async (req, res) => {
+
+app.get('/user', async (req, res) => {
   const client = new MongoClient(uri);
+  const userId = req.query.userId;
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const returnedUsers = await users.find().toArray();
-    res.send(returnedUsers);
+    const query = { user_id: userId }
+    const user = await users.findOne(query);
+    res.send(user);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send(`An error occurred: ${error.message}`);
@@ -109,51 +128,91 @@ app.get('/users', async (req, res) => {
   }
 });
 
+console.log("i am client10 ");
 
+//update user with a match
 
-app.get('/matched-users', async (req, res) => {
+app.put('/addmatch', async (req, res) => {
   const client = new MongoClient(uri);
-  const city = req.query.city;
-
-  if (!city) {
-    return res.status(400).send('Missing city parameter');
-  }
+  const { userId, matchedUserId } = req.body;
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = { show_matches: city };
+
+    const query = { user_id: userId };
+    const updateDocument = {
+      $push: { matches: { user_id: matchedUserId } },
+    };
+
+    const user = await users.updateOne(query, updateDocument);
+    console.log("i am client10.5 ", user);
+    res.send(user);
+  } finally {
+    await client.close();
+  }
+});
+
+console.log("i am client11 ");
+
+app.get('/users', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userIds = JSON.parse(req.query.userIds);
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+
+    const usersArray = [
+      {
+        $match: {
+          user_id: { $in: userIds },
+        },
+      },
+    ];
+    const foundUsers = await users.aggregate(usersArray).toArray();
+    res.send(foundUsers);
+  } finally {
+    await client.close();
+  }
+});
+
+
+app.get('/matched-users', async (req, res) => {
+
+  const client = new MongoClient(uri);
+  
+  const age = req.query.age;
+  const city = req.query.city;
+
+  console.log("show age value " + age);
+  console.log("show city value " + city);
+/*
+  if (!city) {
+    return res.status(400).send('Missing city parameter');
+  }
+*/
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    const query = { show_matches: {$eq: 'Mississauga'} }; // Use 'show_matches' field for the query
+
 
     const listOfMatchedUsers = await users.find(query).toArray();
+    console.log("list of users matched: " + listOfMatchedUsers);
+    console.log("list of users matched:", JSON.stringify(listOfMatchedUsers));
+   
     res.send(listOfMatchedUsers);
   } finally {
     await client.close();
   }
-
-}
-)
-
-
-
-
-
-
-
-
-// Create a multer instance with the desired configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); // Specify the destination folder for storing uploaded files
-  },
-  filename: function (req, file, cb) {
-    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
-    cb(null, uniqueFileName); // Set the filename for the uploaded file
-  },
 });
 
-// Create a multer upload instance
-const upload = multer({ storage });
+
+
 
 app.put('/user', upload.single('picture'), async (req, res) => {
   const file = req.file;
@@ -195,75 +254,72 @@ app.put('/user', upload.single('picture'), async (req, res) => {
 });
 
 
-app.get('/addmatch', async (req, res) => {
+app.get('/messages', async (req, res) => {
   const client = new MongoClient(uri);
-  const { userId, matchedUserId } = req.body;
-
-  try {
-    await client.connect();
-    const database = client.db(playpal - data);
-    const users = database.collection('users');
-
-    const query = { user_id: userId }
-    const updateDocument = {
-      $push: { matches: { usere_id: matchedUserId } }
-    }
-    const user = await users.updateOne(query, updateDocument)
-    res.send(user);
-  } finally {
-    await client.close();
-  }
-})
-
-
-app.get('/users', async (req, res) => {
-  const client = new MongoClient(uri);
-  const userIds = JSON.parse(req.query.userIds);
-  console.log(userIds);
+  const { senderId, receiverId } = req.query;
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
-    const users = database.collection('users');
+    const messages = database.collection('messages');
 
-    const usersArray = [{
-      '$match': {
-        'user_id': { '$in': userIds }
-      }
-    }]
-    const foundUsers = await users.aggregate(usersArray).toArray();
-    console.log(foundUsers);
-    res.send(foundUsers);
+    const messagesArray = [
+      {
+        $match: {
+          $or: [
+            { sender_id: senderId, receiver_id: receiverId },
+            { sender_id: receiverId, receiver_id: senderId },
+          ],
+        },
+      },
+      {
+        $sort: { timestamp: 1 },
+      },
+    ];
 
+    const chatMessages = await messages.aggregate(messagesArray).toArray();
+    res.send(chatMessages);
   } finally {
     await client.close();
   }
-})
+});
 
 
-app.get('/messages', async(req,res)=>{
+
+
+
+
+
+
+
+
+app.post('/messages', async (req, res) => {
+  const { senderId, receiverId, message } = req.body;
+  const timestamp = new Date();
+
   const client = new MongoClient(uri);
-  const {userId, correspondingUserId} = req.query;
 
-  console.log(userId, correspondingUserId);
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const messages = database.collection('messages');
 
-  try{
-  const database = client.db(playpal-data);
-  const messages = database.collection(messages);
+    const newMessage = {
+      sender_id: senderId,
+      receiver_id: receiverId,
+      message: message,
+      timestamp: timestamp,
+    };
 
-  const query ={ 
-    from_userId: userId,
-    to_userId: correspondingUserId,
-  }
-  
-  
-  const foundMessages = await messages.find(query).toArray();
+    const result = await messages.insertOne(newMessage);
+    res.send(result);
   } finally {
     await client.close();
   }
+});
 
-})
 
-app.listen(PORT, function () {
-  console.log('Server listening on port ' + PORT);
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
