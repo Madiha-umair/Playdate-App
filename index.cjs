@@ -241,7 +241,28 @@ app.get('/users', async (req, res) => {
 })
 
 
+app.get('/messages', async(req,res)=>{
+  const client = new MongoClient(uri);
+  const {userId, correspondingUserId} = req.query;
 
+  console.log(userId, correspondingUserId);
+
+  try{
+  const database = client.db(playpal-data);
+  const messages = database.collection(messages);
+
+  const query ={ 
+    from_userId: userId,
+    to_userId: correspondingUserId,
+  }
+  
+  
+  const foundMessages = await messages.find(query).toArray();
+  } finally {
+    await client.close();
+  }
+
+})
 
 app.listen(PORT, function () {
   console.log('Server listening on port ' + PORT);

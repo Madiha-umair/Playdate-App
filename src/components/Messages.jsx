@@ -17,7 +17,7 @@ export default function Messages({user}) {
       </div>
       {!selectedUser && <MatchesDisplay matches={user.matches}/> };
 
-      {selectedUser && <MsgDisplay />};
+      {selectedUser && <MsgDisplay user={user} selectedUser={selectedUser}/>};
     </div>
   );
 }
