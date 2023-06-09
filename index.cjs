@@ -17,23 +17,6 @@ app.get('/', function (req, res) {
   res.json('Hello to my app');
 });
 
-
-// Create a multer instance with the desired configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); // Specify the destination folder for storing uploaded files
-  },
-  filename: function (req, file, cb) {
-    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
-    cb(null, uniqueFileName); // Set the filename for the uploaded file
-  },
-});
-
-
-
-// Create a multer upload instance
-const upload = multer({ storage });
-
 app.post('/signup', async (req, res) => {
   const { email, password } = req.body;
   const uniqueUserId = uuidv4();
@@ -73,6 +56,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+/************************LOGIN ************** */
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const client = new MongoClient(uri);
@@ -95,6 +79,7 @@ app.post('/login', async (req, res) => {
         expiresIn: '12h',
       });
 
+
       res.status(201).json({ token, userId: validUser.user_id });
     } else {
       console.log('Invalid password for email:', email);
@@ -108,6 +93,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
+/************************Get current user data ************** */
 
 app.get('/user', async (req, res) => {
   const client = new MongoClient(uri);
@@ -117,9 +103,10 @@ app.get('/user', async (req, res) => {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = { user_id: userId }
-    const user = await users.findOne(query);
-    res.send(user);
+    const query = { user_id: userId };
+    const userData = await users.findOne(query);
+
+    res.send(userData);   // sending response of 'userdata' as an object
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send(`An error occurred: ${error.message}`);
@@ -128,91 +115,67 @@ app.get('/user', async (req, res) => {
   }
 });
 
-console.log("i am client10 ");
 
-//update user with a match
 
-app.put('/addmatch', async (req, res) => {
-  const client = new MongoClient(uri);
-  const { userId, matchedUserId } = req.body;
-
-  try {
-    await client.connect();
-    const database = client.db('playpal-data');
-    const users = database.collection('users');
-
-    const query = { user_id: userId };
-    const updateDocument = {
-      $push: { matches: { user_id: matchedUserId } },
-    };
-
-    const user = await users.updateOne(query, updateDocument);
-    console.log("i am client10.5 ", user);
-    res.send(user);
-  } finally {
-    await client.close();
-  }
-});
-
-console.log("i am client11 ");
-
+/************************Get all users ************** */
 app.get('/users', async (req, res) => {
   const client = new MongoClient(uri);
-  const userIds = JSON.parse(req.query.userIds);
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
+    const returnedUsers = await users.find().toArray();
+    res.send(returnedUsers);
 
-    const usersArray = [
-      {
-        $match: {
-          user_id: { $in: userIds },
-        },
-      },
-    ];
-    const foundUsers = await users.aggregate(usersArray).toArray();
-    res.send(foundUsers);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send(`An error occurred: ${error.message}`);
   } finally {
     await client.close();
   }
 });
 
-
+/************************Get matched users ************** */
 app.get('/matched-users', async (req, res) => {
-
   const client = new MongoClient(uri);
-  
-  const age = req.query.age;
   const city = req.query.city;
 
-  console.log("show age value " + age);
-  console.log("show city value " + city);
-/*
+  /*
   if (!city) {
     return res.status(400).send('Missing city parameter');
-  }
-*/
+  }*/
+
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = { show_matches: {$eq: 'Mississauga'} }; // Use 'show_matches' field for the query
-
-
+    const query = { show_matches: city };
     const listOfMatchedUsers = await users.find(query).toArray();
-    console.log("list of users matched: " + listOfMatchedUsers);
-    console.log("list of users matched:", JSON.stringify(listOfMatchedUsers));
-   
     res.send(listOfMatchedUsers);
   } finally {
     await client.close();
   }
+}
+)
+
+/************************GET PICTURES OF PROFILES************** */
+
+// Create a multer instance with the desired configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads'); // Specify the destination folder for storing uploaded files
+  },
+  filename: function (req, file, cb) {
+    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
+    cb(null, uniqueFileName); // Set the filename for the uploaded file
+  },
 });
 
+// Create a multer upload instance
+const upload = multer({ storage });
 
-
+/************************ PUT USER ************** */
 
 app.put('/user', upload.single('picture'), async (req, res) => {
   const file = req.file;
@@ -253,73 +216,27 @@ app.put('/user', upload.single('picture'), async (req, res) => {
   }
 });
 
-
-app.get('/messages', async (req, res) => {
+/************************ ADD MATCH ************** */
+app.get('/addmatch', async (req, res) => {
   const client = new MongoClient(uri);
-  const { senderId, receiverId } = req.query;
+  const { userId, matchedUserId } = req.body;
 
   try {
     await client.connect();
-    const database = client.db('playpal-data');
-    const messages = database.collection('messages');
-
-    const messagesArray = [
-      {
-        $match: {
-          $or: [
-            { sender_id: senderId, receiver_id: receiverId },
-            { sender_id: receiverId, receiver_id: senderId },
-          ],
-        },
-      },
-      {
-        $sort: { timestamp: 1 },
-      },
-    ];
-
-    const chatMessages = await messages.aggregate(messagesArray).toArray();
-    res.send(chatMessages);
+    const database = client.db(playpal - data);
+    const users = database.collection('users');
+    const query = { user_id: userId }
+    const updateDocument = {
+      $push: { matches: { usere_id: matchedUserId } }
+    }
+    const user = await users.updateOne(query, updateDocument)
+    res.send(user);
   } finally {
     await client.close();
   }
 });
 
 
-
-
-
-
-
-
-
-
-app.post('/messages', async (req, res) => {
-  const { senderId, receiverId, message } = req.body;
-  const timestamp = new Date();
-
-  const client = new MongoClient(uri);
-
-  try {
-    await client.connect();
-    const database = client.db('playpal-data');
-    const messages = database.collection('messages');
-
-    const newMessage = {
-      sender_id: senderId,
-      receiver_id: receiverId,
-      message: message,
-      timestamp: timestamp,
-    };
-
-    const result = await messages.insertOne(newMessage);
-    res.send(result);
-  } finally {
-    await client.close();
-  }
-});
-
-
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, function () {
+  console.log('Server listening on port ' + PORT);
 });
