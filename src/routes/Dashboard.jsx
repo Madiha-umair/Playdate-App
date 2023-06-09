@@ -93,7 +93,7 @@ const Dashboard = () => {
 
     const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
 
-    const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.usere_id));
+      const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
     console.log('filteredCityUsers ', filteredCityUsers);
 
 
@@ -110,9 +110,15 @@ const Dashboard = () => {
                                     key={matchedUser.child_name}
                                     onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
                                     onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-                                    <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
-                                        <h3>{matchedUser.child_name}</h3>
-                                    </div>
+                                        
+                                        <div
+  style={{
+    backgroundImage: `url("http://localhost:8888/${matchedUser.picture}")`,
+  }}
+  className="card"
+>
+  <h3>{matchedUser.child_name}</h3>
+</div>
                                 </TinderCard>
                             )}
                             <div className="swipeInfo">

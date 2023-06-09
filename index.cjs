@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
+const path = require('path');
+
 
 const uri = 'mongodb+srv://Madiha:Nissan123!@cluster0.xfsegp5.mongodb.net/playpal-data?retryWrites=true&w=majority';
 const PORT = 8888;
@@ -12,6 +14,9 @@ const PORT = 8888;
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.get('/', function (req, res) {
   res.json('Hello to my app');
