@@ -1,12 +1,10 @@
 import './App.css'
-import {BrowserRouter, Routes, Route} from "react-router-dom";
-import Header from "./components/Header";
-
 
 //import page content
 import Home from "./routes/Home";
 import Dashboard from "./routes/Dashboard";
 import Profile from "./routes/Profile";
+import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 
 function App() {
@@ -22,10 +20,7 @@ function App() {
           <Route path="/" element={<Home />} />
           {authToken && <Route path="/dashboard" element={<Dashboard />} />}
           {authToken &&<Route path="/profile" element={<Profile />} />}
-
-         
       </Routes>
-      <Header />
       </BrowserRouter>
     </div>
   )

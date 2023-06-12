@@ -12,6 +12,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
 
   let navigate = useNavigate();
 
+  console.log(email, password, confirmPassword);
+
   const handleClick = () => {
     setShowAuth(false);
   };
@@ -59,8 +61,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
           id="email"
           name="email"
           placeholder="Email"
-          required
-          value={email}
+          required={true}
+          //value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
@@ -68,8 +70,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
           id="password"
           name="password"
           placeholder="Password"
-          required
-          value={password}
+          required ={true}
+         // value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         {isSignup && (
@@ -78,8 +80,8 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
             id="confirmPassword"
             name="confirmPassword"
             placeholder="Confirm Password"
-            required
-            value={confirmPassword}
+            required ={true}
+            //value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         )}
