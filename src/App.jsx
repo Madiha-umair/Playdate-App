@@ -11,7 +11,7 @@ function App() {
 
   const [cookies, setCookies, removeCookie ] = useCookies (['user'])
 
-  const authToken = cookies.AuthToken
+  const authToken = cookies.AuthToken;
 
   return (
     <div className="App">

@@ -1,9 +1,31 @@
-/*import axios from 'axios';
+import axios from 'axios';
 import {useEffect, useState} from 'react';
 import { useCookies } from "react-cookie";
 
-export default function MatchesDisplay({filteredCityUsers}) {
+export default function MatchesDisplay({matches}) {
 
+  const [matchedProfiles, setMatchedProfiles] = useState (null);
+  const matchedUserIds = matches?.map(({user_id}) => user_id);
+
+  const getMatches = async() => {
+    try {
+      const response = await axios.get('http://localhost:8888/users', {
+        params: { userIds: JSON.stringify(matchedUserIds)}  //json.stringify because it passing through array of matcheduserIds
+      })
+      setMatchedProfiles(response.data);
+    } catch (error){
+    console.log("Error" + error);
+  }
+};
+
+  useEffect ( () => {
+    getMatches();
+  },[]);
+
+  console.log(" these are matched profiles:" ,matchedProfiles);
+  
+  
+  /*
   console.log("recieved value of filteredCityUsers in matches display:  ",  filteredCityUsers); //yahan matches ki value nhi arhi from "messages" but user ki arhi hy
     
   const [matchedProfiles, setMatchedProfiles] = useState (null);
@@ -28,10 +50,10 @@ export default function MatchesDisplay({filteredCityUsers}) {
   },[]);
 
   console.log(matchedProfiles);
+  */
   
   
-  
-  
+  /*
   return (
       <div className="matchesDisplay">
          {matchedProfiles?.map((match, _index) =>(   // if matchprofiles exist then map each match on an index
@@ -44,10 +66,24 @@ export default function MatchesDisplay({filteredCityUsers}) {
         ))}
         
       </div>
+    );*/
+
+    return (
+      <div className="matchesDisplay">
+        
+        {matchedProfiles?.map((match, _index) =>(   // if matchprofiles exist then map each match on an index
+          <div key ={_index} className="matchCard" onClick={()=>setSelectedUser(match)}>
+            <div className="imageContainer">       
+              <h3>{match?.child_name}</h3>
+              </div>
+          </div>
+        ))}
+      </div>
     );
+
   }
 
-  */
+  /*
   
 import axios from 'axios';
 import {useEffect, useState} from 'react';
@@ -97,4 +133,4 @@ export default function MatchesDisplay({matches, setSelectedUser}) {
       </div>
     );
   }
-  
+  */

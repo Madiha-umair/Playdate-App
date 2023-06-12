@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 const MsgContainer = ({ user }) => {
     const [ selectedUser, setSelectedUser ] = useState(null)
-
+/*
     return (
         <div className="msg_container">
             <MsgHeader user={user}/>
@@ -20,6 +20,21 @@ const MsgContainer = ({ user }) => {
             {selectedUser && <MsgDisplay user={user} selectedUser={selectedUser}/>}
         </div>
     )
+}
+*/
+
+return (
+    <div className="msgContainer">
+      <MsgHeader user={user} />
+      <div>
+        <button className="option">Matches</button>
+        <button className="option">Chat</button>
+      </div>
+      <MatchesDisplay matches={user.matches} />
+      <MsgDisplay user={user}  />
+
+    </div>
+  );
 }
 
 export default MsgContainer

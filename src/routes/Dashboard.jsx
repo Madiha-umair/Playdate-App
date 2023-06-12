@@ -2,12 +2,12 @@ import TinderCard from 'react-tinder-card';
 import MsgContainer from "../components/MsgContainer";
 import '@react-spring/web';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import {useCookies} from 'react-cookie';
 import axios from 'axios';
 
 
 const Dashboard = () => {
-    const [user, setUser] = useState({
+    /*const [user, setUser] = useState({
         user_id: '',
         picture: '',
         child_name: '',
@@ -21,137 +21,163 @@ const Dashboard = () => {
         interest: [],
         availability: [],
         additional_info: '',
+        matches: [0]
     })
-
+*/
+const [user, setUser] = useState( null);
     const [matchedUsers, setMatchedUsers] = useState(null)
     const [lastDirection, setLastDirection] = useState()
-    const [cookies, setCookies, removeCookie] = useCookies(['user'])
+    const [cookies, setCookie, removeCookie ] = useCookies (['user'])
     const userId = cookies.UserId;
 
-
-    console.log('this is get user1 ', userId);
-
-
+    console.log("yes i am userid:" ,userId);
+    //console.log("yes i am matches value initially:" , user.matches);
+    console.log("yes i am matches value initially:" , user);
+    
 
 
     const getUser = async () => {
-        console.log('this is get user2 ', userId);
-        try {
-            console.log('this is get user3 ', userId);
-            const response = await axios.get('http://localhost:8888/user', { params: { userId } })
+        try{
+            const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } })      
             setUser(response.data);
-            console.log('this is get user4 ', response.data);
         }
-        catch (error) {
+        catch(error){
             console.log(error);
         }
     }
-
-    console.log('this is get user5 ', userId);
+   /* useEffect(() => {
+        getUser();
+    
+      }, []);
+      console.log(" user:", user);*/
+    
     const getMatchedUsers = async () => {
         try {
-            console.log("user", user);
-            const response = await axios.get("http://localhost:8888/matched-users", {
-                params: { userCity: user?.show_matches }
-            });
-            setMatchedUsers(response.data);
+         
+          const response = await axios.get("http://localhost:8888/matched-users", {
+            params: { city: user?.show_matches }
+          });
+          setMatchedUsers(response.data);
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
-    };
-
-
-   
-
-    useEffect(() => {
+      };
+    
+      useEffect(() => {
         getUser()
 
     }, [])
-    console.log('this is get user6 ', user);
+
     useEffect(() => {
         if (user) {
             getMatchedUsers()
         }
-    }, [user]) // everytime user going to change 
+    }, [user])
+
+       
+
+
+    console.log("yes i am userdata at client side:" ,user);
+    console.log ('here is the matched users', matchedUsers)
 
     
-    console.log('this is get user7 ', user);
-
-    console.log('here is the matched users', matchedUsers);
-
-
+    
     const updateMatches = async (matchedUserId) => {
-        try {
-            await axios.put("http://localhost:8888/addmatch", {
+  
+        try{
+             await axios.put("http://localhost:8888/addmatch", {
                 userId,
-                matchedUserId
-            })
+                matchedUserId  
+            }) 
             getUser();
-        } catch (err) {
-            console.log("Error", err);
-        }
+            console.log("userId & matchedUserId3 " , userId, matchedUserId)
+    } catch (err)
+    {
+        console.log("Error", err);
     }
+}
 
-    console.log(user);
+    console.log(" i am user value after update match function:" ,user);
 
     const swiped = (direction, swipedUserId) => {
 
-        if (direction === 'right') {
+        if(direction === 'right')
+        {
+            console.log(" swipe user id1  is: " , swipedUserId)
             updateMatches(swipedUserId);
+            console.log(" swipe user id2  is: " , swipedUserId)
         }
-
+        
         setLastDirection(direction);
+        console.log(" swipe user id3  is: " , swipedUserId)
     }
 
     const outOfFrame = (name) => {
         console.log(name + ' left the screen!')
     }
 
-   // const UserId = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
-   // const filteredCityUsers = matchedUsers?.filter(matchedUser => !UserId.includes(matchedUser.user_id));
 
+    console.log(" i am user value after swipe function:" ,user);
     //const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
-    const matchedUserIds = user?.matches.map(({user_id}) => user_id).concat(userId)
+    const matchedUserIds = user?.matches.map(({user_id}) => user_id).concat(userId);
+
     const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
-   // console.log('filteredCityUsers ', filteredCityUsers);
-
-    console.log('matchedUserIds', matchedUserIds);
-
     console.log('filteredCityUsers ', filteredCityUsers);
+    console.log('MatchedUsers ', matchedUsers);
 
-
+/*
     return (
         <div>
-            {user &&
-                <div className="dashboard">
-                    <MsgContainer user={user}  />
-                    <div className="movetoNext">
-                        <div className="cardContanier">
+            { user &&
+        <div className="dashboard">
+            <Messages user ={user} />
+            <div className="movetoNext">
+                <div className="cardContanier">
 
-                            {filteredCityUsers?.map((matchedUser) =>
-                                <TinderCard className='swipe'
-                                    key={matchedUser.user_id}
-                                    onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
-                                    onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-
-                                    <div
-                                        style={{
-                                            backgroundImage: `url("http://localhost:8888/${matchedUser.picture}")`,
-                                        }}
-                                        className="card"
-                                    >
-                                        <h3>{matchedUser.child_name}</h3>
-                                    </div>
-                                </TinderCard>
-                            )}
-                            <div className="swipeInfo">
-                                {lastDirection ? <p> you swiped {lastDirection}</p> : <p />}
+                    {filteredCityUsers?.map((matchedUser) =>
+                        <TinderCard className='swipe'
+                            key={matchedUser.child_name}
+                            onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
+                            onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
+                            <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
+                                <h3>{matchedUser.child_name}</h3>
                             </div>
-                        </div>
+                        </TinderCard>
+                    )}
+                    <div className="swipeInfo">
+                        {lastDirection ? <p> you swiped {lastDirection}</p> : <p />}
                     </div>
                 </div>
-            }
+            </div>
+        </div>
+}
         </div>
     )
+*/
+return (
+    <div>
+        {user &&
+    <div className="dashboard">
+        <MsgContainer user ={user} />
+        <div className="movetoNext">
+            <div className="cardContanier">
+            {filteredCityUsers?.map((matchedUser) =>
+                        <TinderCard className='swipe'
+                            key={matchedUser.child_name}
+                            onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
+                            onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
+                            <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
+                                <h3>{matchedUser.child_name}</h3>
+                            </div>
+                        </TinderCard>
+                    )}
+                <div className="swipeInfo">
+                    {lastDirection ? <p> you swiped {lastDirection}</p> : <p />}
+                </div>
+            </div>
+        </div>
+    </div>
 }
+    </div>
+)      }
 export default Dashboard

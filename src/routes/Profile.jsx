@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import axios from 'axios';
 
 const profile = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const [cookies, setCookie, removeCookie] = useCookies(null);
   const [profileData, setProfileData] = useState({
     user_id: cookies.UserId,
     picture: '',
@@ -20,6 +20,7 @@ const profile = () => {
     interest: [],
     availability: [],
     additional_info: '',
+    matches:[]
   });
 
   let navigate = useNavigate();

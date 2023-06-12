@@ -1,12 +1,12 @@
-/*import React from 'react';
-import TextMsg from './TextMsg';
+import React from 'react';
+
 import Nav from "./Nav";
 import MsgInput from './MsgInput';
 
 export default function MsgDisplay() {
   return (
     <div className="msgDisplay">
-      <TextMsg />
+
       <MsgInput />
       <div className="msgDisplay">
         <Nav />
@@ -15,7 +15,7 @@ export default function MsgDisplay() {
   );
 }
 
-*/
+/*
 
 
 import Messages from './Messages';
@@ -80,7 +80,7 @@ export default function MsgDisplay({ user, selectedUser }) {
     })
 
     const descendingOrderMessages = messages?.sort((a,b) => a.timestamp.localeCompare(b.timestamp))
-  
+  /*
     return (
     <div className="msgDisplay">
       <Messages descendingOrderMessages={descendingOrderMessages}/>
@@ -91,3 +91,4 @@ export default function MsgDisplay({ user, selectedUser }) {
     </div>
   );
 }
+*/

@@ -104,7 +104,7 @@ app.get('/user', async (req, res) => {
   const client = new MongoClient(uri);
   const userId = req.query.userId;
 
-  console.error('userId is hereee', userId);
+ // console.log("i received userId" , userId)
 
   try {
     await client.connect();
@@ -113,10 +113,32 @@ app.get('/user', async (req, res) => {
     const query = { user_id: userId };
     const userData = await users.findOne(query);
 
-    res.send(userData);   // sending response of 'userdata' as an object
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send(`An error occurred: ${error.message}`);
+    res.send(userData);   // sending response of 'userdata' as an objec
+    //console.log("this is user data" , userData)
+    
+  } finally {
+    await client.close();
+  }
+});
+
+
+/************************ ADD MATCH ************** */
+app.put('/addmatch', async (req, res) => {
+  const client = new MongoClient(uri);
+  const { userId, matchedUserId } = req.body;
+
+  console.log('matched user Id data is here  ', matchedUserId);   
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    const query = { user_id: userId }
+    const updateDocument = {
+      $push: { matches: { user_id: matchedUserId } }
+    }
+    const user = await users.updateOne(query, updateDocument)
+    res.send(user);
   } finally {
     await client.close();
   }
@@ -128,10 +150,11 @@ app.get('/user', async (req, res) => {
 app.get('/users', async (req, res) => {
   const client = new MongoClient(uri);
   const userIds = JSON.parse(req.query.userIds)
-
+  
+  console.log("userIds are :" , userIds)
     try {
         await client.connect()
-        const database = client.db('app-data')
+        const database = client.db('playpal-data')
         const users = database.collection('users')
 
         const pipeline =
@@ -146,8 +169,8 @@ app.get('/users', async (req, res) => {
             ]
 
         const foundUsers = await users.aggregate(pipeline).toArray()
-
-        res.json(foundUsers);
+            console.log("this is found user:" ,foundUsers);
+        res.send(foundUsers);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send(`An error occurred: ${error.message}`);
@@ -159,7 +182,9 @@ app.get('/users', async (req, res) => {
 /************************Get matched users ************** */
 app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);
-  const city = req.query.userCity;
+  const city = req.query.city;
+
+  //console.log("this is city value:", city);
 
   try {
     await client.connect();
@@ -168,11 +193,14 @@ app.get('/matched-users', async (req, res) => {
     const query = { show_matches: {$eq: city }};
     const listOfMatchedUsers = await users.find(query).toArray();
     res.json(listOfMatchedUsers);
+   // console.log(" List of matched users are:",listOfMatchedUsers );
   } finally {
     await client.close();
   }
 }
 )
+
+
 
 /************************GET PICTURES OF PROFILES************** */
 
@@ -192,21 +220,21 @@ const upload = multer({ storage });
 
 /************************ PUT USER ************** */
 
-app.put('/user', upload.single('picture'), async (req, res) => {
-  const file = req.file;
-
-  if (file) {
+app.put('/user', async (req, res) => {
     const client = new MongoClient(uri);
+    const { userId, matchedUserId} = req.body;
 
     try {
       await client.connect();
       const database = client.db('playpal-data');
       const users = database.collection('users');
 
-      const query = { user_id: req.body.user_id };
+      const query = { user_id: userId };
       const updateDocument = {
-        $set: {
-          picture: file.path, // Store the file path directly in the update document
+        $push:{ matches:{ user_id: matchedUserId}},
+      }
+       /* $set: {
+          //picture: file.path, // Store the file path directly in the update document
           child_name: req.body.child_name,
           age: req.body.age,
           gender: req.body.gender,
@@ -218,41 +246,19 @@ app.put('/user', upload.single('picture'), async (req, res) => {
           interest: req.body.interest,
           availability: req.body.availability,
           additional_info: req.body.additional_info,
-        },
-      };
+        },*/
+      
 
       const newUser = await users.updateOne(query, updateDocument);
       res.send(newUser);
     } finally {
       await client.close();
     }
-  } else {
-    res.status(400).send({ message: 'No file uploaded' });
-  }
-});
-
-/************************ ADD MATCH ************** */
-app.get('/addmatch', async (req, res) => {
-  const client = new MongoClient(uri);
-  const { userId, matchedUserId } = req.body;
-
-  try {
-    await client.connect();
-    const database = client.db('playpal-data');
-    const users = database.collection('users');
-    const query = { user_id: userId }
-    const updateDocument = {
-      $push: { matches: { usere_id: matchedUserId } }
-    }
-    const user = await users.updateOne(query, updateDocument)
-    res.send(user);
-  } finally {
-    await client.close();
-  }
+ 
 });
 
 /************************ Get Messages ************** */
-app.get('/messages', async (req, res) => {
+/*app.get('/messages', async (req, res) => {
   const client = new MongoClient(uri);
   const { senderId, receiverId } = req.query;
   console.log(senderId, receiverId);
@@ -267,10 +273,10 @@ app.get('/messages', async (req, res) => {
   } finally {
     await client.close();
   }
-});
+});*/
 
 /************************ POST MESSAGES ************** */
-app.post('/messages', async (req, res) => {
+/*app.post('/messages', async (req, res) => {
 
   const client = new MongoClient(uri);
   const message = req.body.message;
@@ -284,7 +290,7 @@ app.post('/messages', async (req, res) => {
   } finally {
     await client.close();
   }
-});
+});*/
 
 app.listen(PORT, function () {
   console.log('Server listening on port ' + PORT);
