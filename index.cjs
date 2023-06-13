@@ -200,8 +200,6 @@ app.get('/matched-users', async (req, res) => {
 }
 )
 
-
-
 /************************GET PICTURES OF PROFILES************** */
 
 // Create a multer instance with the desired configuration
@@ -209,15 +207,12 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads'); // Specify the destination folder for storing uploaded files
   },
-  /*filename: function (req, file, cb) {
-    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
-    cb(null, uniqueFileName + '.jpg'); // Set the filename for the uploaded file
-  },*/
   filename: function (req, file, cb) {
     const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
     const fileExtension = path.extname(file.originalname); // Get the original file extension
     const updatedFileName = uniqueFileName + fileExtension; // Combine the unique filename and extension
-    cb(null, updatedFileName); // Set the filename for the uploaded file
+    const updatedFilePath = updatedFileName.replace(/\\/g, '/'); // Replace backslashes with forward slashes
+    cb(null, updatedFilePath); // Set the filename for the uploaded file
   },
 });
 

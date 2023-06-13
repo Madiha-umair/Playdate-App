@@ -5,12 +5,11 @@ import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
 
-
 const Dashboard = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const userId = cookies.UserId;
-    // const [user, setUser] = useState(null);
+    //const [user, setUser] = useState(null);
     const [user, setUser] = useState({
         user_id: cookies.UserId,
         picture: '',
@@ -31,10 +30,6 @@ const Dashboard = () => {
     const [matchedUsers, setMatchedUsers] = useState(null)
     const [lastDirection, setLastDirection] = useState()
 
-    // console.log("yes i am userid:", userId);
-    // console.log("yes i am matches value initially:" , user.matches);
-    // console.log("yes i am matches value initially:", user);
-
     const getUser = async () => {
         try {
             const response = await axios.get('http://localhost:8888/user', { params: { userId: userId } })
@@ -44,15 +39,9 @@ const Dashboard = () => {
             console.log(error);
         }
     }
-    /* useEffect(() => {
-         getUser();
-     
-       }, []);
-       console.log(" user:", user);*/
 
     const getMatchedUsers = async () => {
         try {
-
             const response = await axios.get("http://localhost:8888/matched-users", {
                 params: { city: user?.show_matches }
             });
@@ -73,24 +62,20 @@ const Dashboard = () => {
         }
     }, [user])
 
-    // console.log("yes i am userdata at client side:", user);
-    // console.log('here is the matched users', matchedUsers)
-
     const updateMatches = async (matchedUserId) => {
-
         try {
             await axios.put("http://localhost:8888/addmatch", {
                 userId,
                 matchedUserId
             })
             getUser();
-            console.log("userId & matchedUserId3 ", userId, matchedUserId)
+
         } catch (err) {
             console.log("Error", err);
         }
     }
 
-    console.log(" i am user value after update match function:", user);
+    // console.log(" user value:", user);
 
     const swiped = (direction, swipedUserId) => {
 
@@ -108,19 +93,10 @@ const Dashboard = () => {
         console.log(name + ' left the screen!')
     }
 
-
-    console.log(" i am user value after swipe function:", user);
-    //const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
-    //const matchedUserIds = user?.matches.map(({ user_id }) => user_id).concat(userId);
     const matchedUserIds = user?.matches?.map(({ user_id }) => user_id).concat(userId) || [];
 
-
     const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
-    console.log('filteredCityUsers ', filteredCityUsers);
-    console.log('MatchedUsers ', matchedUsers);
-
-    
-
+    //console.log('filteredCityUsers ', filteredCityUsers);
 
     return (
         <div>
@@ -134,9 +110,8 @@ const Dashboard = () => {
                                     key={matchedUser.user_id}
                                     onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
                                     onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-                                    <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture})` : 'none', }} className="card">
+                                    <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture.replace(/\\/g, '/')})` : 'none' }} className="card">
                                         <h3>{matchedUser.child_name}</h3>
-                                        
                                     </div>
                                 </TinderCard>
                             )}
