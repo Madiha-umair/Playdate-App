@@ -14,6 +14,8 @@ const MsgInput = ({ user, selectedUser, getUserMessages, getSelectedUsersMessage
             message: textArea
         }
 
+        console.log(" this is message:" , message);
+
         try {
             await axios.post('http://localhost:8888/message', { message })
             getUserMessages()
@@ -24,18 +26,14 @@ const MsgInput = ({ user, selectedUser, getUserMessages, getSelectedUsersMessage
         }
     }
 
-    /*
+    
     return (
         <div className="msg-input">
             <textarea value={textArea} onChange={(e) => setTextArea(e.target.value)}/>
             <button className="form-submit-btn " onClick={addMessage}>Submit</button>
         </div>
-    )*/
-    return (
-        <div className="msg-input">
-       
-        </div>
     )
+  
 }
 
 export default MsgInput

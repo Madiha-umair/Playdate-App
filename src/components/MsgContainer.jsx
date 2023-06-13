@@ -4,7 +4,9 @@ import MsgDisplay from './MsgDisplay'
 import { useState } from 'react'
 
 const MsgContainer = ({ user }) => {
-    const [ selectedUser, setSelectedUser ] = useState(null)
+    const [ selectedUser, setSelectedUser ] = useState(null);
+
+    console.log(' select User', selectedUser);
 /*
     return (
         <div className="msg_container">
@@ -26,14 +28,16 @@ const MsgContainer = ({ user }) => {
 return (
     <div className="msgContainer">
       <MsgHeader user={user} />
+      
       <div>
-        <button className="option">Matches</button>
-        <button className="option">Chat</button>
-      </div>
-      <MatchesDisplay matches={user.matches} />
-      <MsgDisplay user={user}  />
+                <button className="option" onClick={() => setSelectedUser(null)}>Matches</button>
+                <button className="option" disabled={!selectedUser}>Message</button>
+            </div>
 
-    </div>
+            {!selectedUser && <MatchesDisplay matches={user.matches} setSelectedUser={setSelectedUser}/>}
+
+            {selectedUser && <MsgDisplay user={user} selectedUser={selectedUser}/>}
+        </div>
   );
 }
 

@@ -1,6 +1,6 @@
 
 const Messages = ({descendingOrderMessages}) => {
- /* return (
+  return (
       <>
           <div className="msgDisplay">
               {descendingOrderMessages.map((message, _index) => (
@@ -16,14 +16,8 @@ const Messages = ({descendingOrderMessages}) => {
               ))}
           </div>
       </>
-  )*/
-  return (
-    <>
-        <div className="msgDisplay">
-           
-        </div>
-    </>
-)
+  )
+
 }
 
 export default Messages

@@ -6,9 +6,9 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const path = require('path');
+require('dotenv').config();
 
-
-const uri = 'mongodb+srv://Madiha:Nissan123!@cluster0.xfsegp5.mongodb.net/playpal-data?retryWrites=true&w=majority';
+const uri = process.env.URI;
 const PORT = 8888;
 
 const app = express();
@@ -104,7 +104,7 @@ app.get('/user', async (req, res) => {
   const client = new MongoClient(uri);
   const userId = req.query.userId;
 
- // console.log("i received userId" , userId)
+  // console.log("i received userId" , userId)
 
   try {
     await client.connect();
@@ -115,7 +115,7 @@ app.get('/user', async (req, res) => {
 
     res.send(userData);   // sending response of 'userdata' as an objec
     //console.log("this is user data" , userData)
-    
+
   } finally {
     await client.close();
   }
@@ -127,7 +127,7 @@ app.put('/addmatch', async (req, res) => {
   const client = new MongoClient(uri);
   const { userId, matchedUserId } = req.body;
 
-  console.log('matched user Id data is here  ', matchedUserId);   
+  // console.log('matched user Id data is here  ', matchedUserId);   
 
   try {
     await client.connect();
@@ -150,27 +150,27 @@ app.put('/addmatch', async (req, res) => {
 app.get('/users', async (req, res) => {
   const client = new MongoClient(uri);
   const userIds = JSON.parse(req.query.userIds)
-  
-  console.log("userIds are :" , userIds)
-    try {
-        await client.connect()
-        const database = client.db('playpal-data')
-        const users = database.collection('users')
 
-        const pipeline =
-            [
-                {
-                    '$match': {
-                        'user_id': {
-                            '$in': userIds
-                        }
-                    }
-                }
-            ]
+  // console.log("userIds are :" , userIds)
+  try {
+    await client.connect()
+    const database = client.db('playpal-data')
+    const users = database.collection('users')
 
-        const foundUsers = await users.aggregate(pipeline).toArray()
-            console.log("this is found user:" ,foundUsers);
-        res.send(foundUsers);
+    const pipeline =
+      [
+        {
+          '$match': {
+            'user_id': {
+              '$in': userIds
+            }
+          }
+        }
+      ]
+
+    const foundUsers = await users.aggregate(pipeline).toArray()
+    // console.log("this is found user:" ,foundUsers);
+    res.send(foundUsers);
   } catch (error) {
     console.error('Error:', error);
     res.status(500).send(`An error occurred: ${error.message}`);
@@ -190,10 +190,10 @@ app.get('/matched-users', async (req, res) => {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = { show_matches: {$eq: city }};
+    const query = { show_matches: { $eq: city } };
     const listOfMatchedUsers = await users.find(query).toArray();
     res.json(listOfMatchedUsers);
-   // console.log(" List of matched users are:",listOfMatchedUsers );
+    // console.log(" List of matched users are:",listOfMatchedUsers );
   } finally {
     await client.close();
   }
@@ -221,65 +221,55 @@ const upload = multer({ storage });
 /************************ PUT USER ************** */
 
 app.put('/user', async (req, res) => {
-    const client = new MongoClient(uri);
-    const { userId, matchedUserId} = req.body;
+  const client = new MongoClient(uri);
+  const { userId, matchedUserId } = req.body;
 
-    try {
-      await client.connect();
-      const database = client.db('playpal-data');
-      const users = database.collection('users');
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
 
-      const query = { user_id: userId };
-      const updateDocument = {
-        $push:{ matches:{ user_id: matchedUserId}},
-      }
-       /* $set: {
-          //picture: file.path, // Store the file path directly in the update document
-          child_name: req.body.child_name,
-          age: req.body.age,
-          gender: req.body.gender,
-          city: req.body.city,
-          country: req.body.country,
-          language: req.body.language,
-          other_language: req.body.other_language,
-          show_matches: req.body.show_matches,
-          interest: req.body.interest,
-          availability: req.body.availability,
-          additional_info: req.body.additional_info,
-        },*/
-      
-
-      const newUser = await users.updateOne(query, updateDocument);
-      res.send(newUser);
-    } finally {
-      await client.close();
+    const query = { user_id: userId };
+    const updateDocument = {
+      $push: { matches: { user_id: matchedUserId } },
     }
- 
+
+    const newUser = await users.updateOne(query, updateDocument);
+    res.send(newUser);
+  } finally {
+    await client.close();
+  }
+
 });
 
 /************************ Get Messages ************** */
-/*app.get('/messages', async (req, res) => {
+app.get('/messages', async (req, res) => {
   const client = new MongoClient(uri);
-  const { senderId, receiverId } = req.query;
-  console.log(senderId, receiverId);
+  const { userId, correspondingUserId } = req.query;
+  // console.log(" these are sender and receiver ids:" , userId, correspondingUserId);
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const messages = database.collection('messages');
-    const query = { from_userId: senderId, to_userId: receiverId }
+    const query = { from_userId: userId, to_userId: correspondingUserId }
     const chatMessages = await messages.find(query).toArray();
+
+    //console.log("here are chat messages:" , chatMessages);
+
     res.send(chatMessages);
   } finally {
     await client.close();
   }
-});*/
+});
 
 /************************ POST MESSAGES ************** */
-/*app.post('/messages', async (req, res) => {
+app.post('/message', async (req, res) => {
 
   const client = new MongoClient(uri);
   const message = req.body.message;
+
+  console.log("message o be inserted is here:", message);
 
   try {
     await client.connect();
@@ -290,7 +280,7 @@ app.put('/user', async (req, res) => {
   } finally {
     await client.close();
   }
-});*/
+});
 
 app.listen(PORT, function () {
   console.log('Server listening on port ' + PORT);

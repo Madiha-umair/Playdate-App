@@ -1,9 +1,9 @@
-import React from 'react';
+/*import React from 'react';
 
 import Nav from "./Nav";
 import MsgInput from './MsgInput';
 
-export default function MsgDisplay() {
+export default function MsgDisplay({ user, selectedUser }) {
   return (
     <div className="msgDisplay">
 
@@ -15,7 +15,7 @@ export default function MsgDisplay() {
   );
 }
 
-/*
+*/
 
 
 import Messages from './Messages';
@@ -37,7 +37,7 @@ export default function MsgDisplay({ user, selectedUser }) {
       });
       setUsersMessages(response.data);
     } catch (error) {
-      console.log("error " + error);
+      console.log("error " , error);
     }
   };
 
@@ -57,7 +57,7 @@ export default function MsgDisplay({ user, selectedUser }) {
     getSelectedUsersMessages();
   }, []);
 
-  console.log(usersMessages);
+  console.log("here are users message:" , usersMessages);
 
   const messages = []
 
@@ -79,16 +79,19 @@ export default function MsgDisplay({ user, selectedUser }) {
         messages.push(formattedMessage)
     })
 
-    const descendingOrderMessages = messages?.sort((a,b) => a.timestamp.localeCompare(b.timestamp))
-  /*
-    return (
+    const descendingOrderMessages = messages?.sort((a,b) => a.timestamp.localeCompare(b.timestamp));
+
+     return (
     <div className="msgDisplay">
       <Messages descendingOrderMessages={descendingOrderMessages}/>
      <MsgInput
          user={user}
-         selectedUser={selectedUser} getUserMessages={getUsersMessages} getSelectedUsersMessages={getSelectedUsersMessages}/>
+         selectedUser={selectedUser}
+          getUserMessages={getUsersMessages}
+           getSelectedUsersMessages={getSelectedUsersMessages}/>
       
     </div>
   );
+  
+   
 }
-*/
