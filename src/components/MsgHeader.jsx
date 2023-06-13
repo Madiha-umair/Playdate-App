@@ -14,7 +14,8 @@ export default function MsgHeader ({user}) {
       <div className="msgboxHeader">
         <div className="profileContainer">
             <div className="imgContainer">
-                <img src={user.picture} alt = { "profile picture of" + user.child_name} />
+                <img src={user.picture} alt = { "profile picture of" + user.child_name}  />
+                
             </div>
             <h3>{user.child_name}</h3>
         </div>

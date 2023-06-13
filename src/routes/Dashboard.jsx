@@ -134,7 +134,7 @@ const Dashboard = () => {
                                     key={matchedUser.user_id}
                                     onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
                                     onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-                                    <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture}.jpg)` : 'none', }} className="card">
+                                    <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture})` : 'none', }} className="card">
                                         <h3>{matchedUser.child_name}</h3>
                                         
                                     </div>

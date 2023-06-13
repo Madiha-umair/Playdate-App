@@ -184,7 +184,7 @@ app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);
   const city = req.query.city;
 
-  console.log("this is city value:", city);
+ // console.log("this is city value:", city);
 
   try {
     await client.connect();
@@ -193,7 +193,7 @@ app.get('/matched-users', async (req, res) => {
     const query = { show_matches: { $eq: city } };
     const listOfMatchedUsers = await users.find(query).toArray();
     res.json(listOfMatchedUsers);
-     console.log(" List of matched users are:",listOfMatchedUsers );
+    // console.log(" List of matched users are:",listOfMatchedUsers );
   } finally {
     await client.close();
   }
@@ -209,9 +209,15 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads'); // Specify the destination folder for storing uploaded files
   },
+  /*filename: function (req, file, cb) {
+    const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
+    cb(null, uniqueFileName + '.jpg'); // Set the filename for the uploaded file
+  },*/
   filename: function (req, file, cb) {
     const uniqueFileName = uuidv4(); // Generate a unique filename for the uploaded file
-    cb(null, uniqueFileName); // Set the filename for the uploaded file
+    const fileExtension = path.extname(file.originalname); // Get the original file extension
+    const updatedFileName = uniqueFileName + fileExtension; // Combine the unique filename and extension
+    cb(null, updatedFileName); // Set the filename for the uploaded file
   },
 });
 
@@ -220,27 +226,46 @@ const upload = multer({ storage: storage });
 
 /************************ PUT USER ************** */
 
-app.put('/user', async (req, res) => {
-  const client = new MongoClient(uri);
-  const { userId, matchedUserId } = req.body;
+app.put('/user', upload.single('picture'), async (req, res) => {
+  const file = req.file;
 
-  try {
-    await client.connect();
-    const database = client.db('playpal-data');
-    const users = database.collection('users');
+  if (file) {
+    const client = new MongoClient(uri);
 
-    const query = { user_id: userId };
-    const updateDocument = {
-      $push: { matches: { user_id: matchedUserId } },
+    try {
+      await client.connect();
+      const database = client.db('playpal-data');
+      const users = database.collection('users');
+
+      const query = { user_id: req.body.user_id };
+      const updateDocument = {
+        $set: {
+          picture: file.path, // Store the file path directly in the update document
+          child_name: req.body.child_name,
+          age: req.body.age,
+          gender: req.body.gender,
+          city: req.body.city,
+          country: req.body.country,
+          language: req.body.language,
+          other_language: req.body.other_language,
+          show_matches: req.body.show_matches,
+          interest: req.body.interest,
+          availability: req.body.availability,
+          additional_info: req.body.additional_info,
+          matches: req.body.matches
+        },
+      };
+
+      const newUser = await users.updateOne(query, updateDocument);
+      res.send(newUser);
+    } finally {
+      await client.close();
     }
-
-    const newUser = await users.updateOne(query, updateDocument);
-    res.send(newUser);
-  } finally {
-    await client.close();
+  } else {
+    res.status(400).send({ message: 'No file uploaded' });
   }
-
 });
+
 
 /************************ Get Messages ************** */
 app.get('/messages', async (req, res) => {
@@ -269,7 +294,7 @@ app.post('/message', async (req, res) => {
   const client = new MongoClient(uri);
   const message = req.body.message;
 
-  console.log("message o be inserted is here:", message);
+  //console.log("message o be inserted is here:", message);
 
   try {
     await client.connect();
