@@ -8,14 +8,31 @@ import axios from 'axios';
 
 const Dashboard = () => {
 
-    const [user, setUser] = useState(null);
-    const [matchedUsers, setMatchedUsers] = useState(null)
-    const [lastDirection, setLastDirection] = useState()
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const userId = cookies.UserId;
+   // const [user, setUser] = useState(null);
+   const [user, setUser] = useState({
+    user_id: cookies.UserId,
+    picture: '',
+    child_name: '',
+    age: '',
+    gender: '',
+    city: '',
+    country: '',
+    language: '',
+    other_language: '',
+    show_matches: '',
+    interest: [],
+    availability: [],
+    additional_info: '',
+    matches:[]
+  });
+    const [matchedUsers, setMatchedUsers] = useState(null)
+    const [lastDirection, setLastDirection] = useState()
+   
 
     console.log("yes i am userid:", userId);
-    //console.log("yes i am matches value initially:" , user.matches);
+    console.log("yes i am matches value initially:" , user.matches);
     console.log("yes i am matches value initially:", user);
 
 
@@ -101,7 +118,9 @@ const Dashboard = () => {
 
     console.log(" i am user value after swipe function:", user);
     //const matchedUserIds = (user?.matches ?? []).map(({ user_id }) => user_id).concat(userId);
-    const matchedUserIds = user?.matches.map(({ user_id }) => user_id).concat(userId);
+    //const matchedUserIds = user?.matches.map(({ user_id }) => user_id).concat(userId);
+    const matchedUserIds = user?.matches?.map(({ user_id }) => user_id).concat(userId) || [];
+
 
     const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
     console.log('filteredCityUsers ', filteredCityUsers);

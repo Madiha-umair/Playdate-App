@@ -184,7 +184,7 @@ app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);
   const city = req.query.city;
 
-  //console.log("this is city value:", city);
+  console.log("this is city value:", city);
 
   try {
     await client.connect();
@@ -193,7 +193,7 @@ app.get('/matched-users', async (req, res) => {
     const query = { show_matches: { $eq: city } };
     const listOfMatchedUsers = await users.find(query).toArray();
     res.json(listOfMatchedUsers);
-    // console.log(" List of matched users are:",listOfMatchedUsers );
+     console.log(" List of matched users are:",listOfMatchedUsers );
   } finally {
     await client.close();
   }
