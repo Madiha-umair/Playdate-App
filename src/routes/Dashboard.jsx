@@ -10,32 +10,30 @@ const Dashboard = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const userId = cookies.UserId;
-   // const [user, setUser] = useState(null);
-   const [user, setUser] = useState({
-    user_id: cookies.UserId,
-    picture: '',
-    child_name: '',
-    age: '',
-    gender: '',
-    city: '',
-    country: '',
-    language: '',
-    other_language: '',
-    show_matches: '',
-    interest: [],
-    availability: [],
-    additional_info: '',
-    matches:[]
-  });
+    // const [user, setUser] = useState(null);
+    const [user, setUser] = useState({
+        user_id: cookies.UserId,
+        picture: '',
+        //picturePreview: null,
+        child_name: '',
+        age: '',
+        gender: '',
+        city: '',
+        country: '',
+        language: '',
+        other_language: '',
+        show_matches: '',
+        interest: [],
+        availability: [],
+        additional_info: '',
+        matches: []
+    });
     const [matchedUsers, setMatchedUsers] = useState(null)
     const [lastDirection, setLastDirection] = useState()
-   
 
-    console.log("yes i am userid:", userId);
-    console.log("yes i am matches value initially:" , user.matches);
-    console.log("yes i am matches value initially:", user);
-
-
+    // console.log("yes i am userid:", userId);
+    // console.log("yes i am matches value initially:" , user.matches);
+    // console.log("yes i am matches value initially:", user);
 
     const getUser = async () => {
         try {
@@ -75,13 +73,8 @@ const Dashboard = () => {
         }
     }, [user])
 
-
-
-
-    console.log("yes i am userdata at client side:", user);
-    console.log('here is the matched users', matchedUsers)
-
-
+    // console.log("yes i am userdata at client side:", user);
+    // console.log('here is the matched users', matchedUsers)
 
     const updateMatches = async (matchedUserId) => {
 
@@ -126,6 +119,8 @@ const Dashboard = () => {
     console.log('filteredCityUsers ', filteredCityUsers);
     console.log('MatchedUsers ', matchedUsers);
 
+    
+
 
     return (
         <div>
@@ -139,8 +134,9 @@ const Dashboard = () => {
                                     key={matchedUser.user_id}
                                     onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
                                     onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}>
-                                    <div style={{ backgroundImage: matchedUser.url ? `url(${matchedUser.url})` : 'none', }} className="card">
+                                    <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture}.jpg)` : 'none', }} className="card">
                                         <h3>{matchedUser.child_name}</h3>
+                                        
                                     </div>
                                 </TinderCard>
                             )}

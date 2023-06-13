@@ -216,7 +216,7 @@ const storage = multer.diskStorage({
 });
 
 // Create a multer upload instance
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
 /************************ PUT USER ************** */
 
