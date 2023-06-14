@@ -181,6 +181,31 @@ app.get('/users', async (req, res) => {
   }
 });
 
+/************************Get user data for profile page**************/
+app.get('/profiledata/:userId', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userId = req.params.userId;
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    const query = { user_id: userId };
+    const userData = await users.findOne(query);
+
+    if (!userData) {
+      return res.status(404).send('User not found');
+    }
+
+    res.send(userData);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+  }
+});
+
 /************************Get matched users ************** */
 app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);

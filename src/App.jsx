@@ -4,6 +4,7 @@ import './App.css'
 import Home from "./routes/Home";
 import Dashboard from "./routes/Dashboard";
 import Profile from "./routes/Profile";
+import ProfileData from "./routes/ProfileData";
 import {BrowserRouter, Route, Routes} from 'react-router-dom'
 import { useCookies } from 'react-cookie';
 import Terms from './routes/Terms';
@@ -20,6 +21,7 @@ function App() {
       <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/profiledata/:userId" element={<ProfileData />} />
           {authToken && <Route path="/dashboard" element={<Dashboard />} />}
           {authToken &&<Route path="/profile" element={<Profile />} />}
       </Routes>

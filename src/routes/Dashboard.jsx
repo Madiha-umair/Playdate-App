@@ -4,6 +4,7 @@ import '@react-spring/web';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
 
@@ -80,13 +81,10 @@ const Dashboard = () => {
     const swiped = (direction, swipedUserId) => {
 
         if (direction === 'right') {
-            console.log(" swipe user id1  is: ", swipedUserId)
             updateMatches(swipedUserId);
-            console.log(" swipe user id2  is: ", swipedUserId)
         }
 
         setLastDirection(direction);
-        console.log(" swipe user id3  is: ", swipedUserId)
     }
 
     const outOfFrame = (name) => {
@@ -95,10 +93,45 @@ const Dashboard = () => {
 
     const matchedUserIds = user?.matches?.map(({ user_id }) => user_id).concat(userId) || [];
 
+    // count user himself as a match then use this line
     const filteredCityUsers = matchedUsers?.filter(matchedUser => !matchedUserIds.includes(matchedUser.user_id));
-    //console.log('filteredCityUsers ', filteredCityUsers);
+
+    // if dont want  to count user himself as a match then use this line
+    //const filteredCityUsers = matchedUsers?.filter(matchedUser => matchedUser.user_id !== userId && !matchedUserIds.includes(matchedUser.user_id));
 
     return (
+        <div>
+            {user &&
+                <div className="dashboard">
+                    <MsgContainer user={user} />
+                    <div className="movetoNext">
+                        <div className="cardContanier">
+                            {filteredCityUsers?.map((matchedUser) =>
+                                <TinderCard className='swipe'
+                                    key={matchedUser.user_id}
+                                    onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
+                                    onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}
+                                >
+                                    <Link to={`/profiledata/${matchedUser.user_id}`}>
+                                        <div style={{ backgroundImage: matchedUser.picture ? `url(${matchedUser.picture.replace(/\\/g, '/')})` : 'none' }} className="card">
+                                            <h3>{matchedUser.child_name}</h3>
+                                        </div>
+                                    </Link>
+                                </TinderCard>
+                            )}
+                            <div className="swipeInfo">
+                                {lastDirection ? <p> you swiped {lastDirection}</p> : <p />}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    )
+}
+export default Dashboard
+
+/*  return (
         <div>
             {user &&
                 <div className="dashboard">
@@ -125,4 +158,4 @@ const Dashboard = () => {
         </div>
     )
 }
-export default Dashboard
+export default Dashboard*/ 
