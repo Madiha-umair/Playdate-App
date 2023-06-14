@@ -70,7 +70,7 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
       </div>
       <h2>{isSignup ? 'Create Account' : 'Log in'}</h2>
       <p>
-        By clicking log in, you agree to our terms. Learn how we process your
+        By clicking log in, you agree to our <a href="/terms">terms and conditions</a>. Learn how we process your
         data in our Privacy Policy
       </p>
       <form onSubmit={submitFunc} >
