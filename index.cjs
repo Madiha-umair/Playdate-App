@@ -22,6 +22,7 @@ app.get('/', function (req, res) {
   res.json('Hello to my app');
 });
 
+/************************Sign up ************** */
 app.post('/signup', async (req, res) => {
   const { email, password } = req.body;
   const uniqueUserId = uuidv4();
@@ -33,7 +34,7 @@ app.post('/signup', async (req, res) => {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const registeredUser = await users.findOne({ email });
+    const registeredUser = await users.findOne({ email }); //checking if user already exsist!
 
     if (registeredUser) {
       return res.status(409).send('The user account already exists. Please proceed to login.');
@@ -64,35 +65,36 @@ app.post('/signup', async (req, res) => {
 /************************LOGIN ************** */
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
   const client = new MongoClient(uri);
 
   try {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const validUser = await users.findOne({ email });
+    const user = await users.findOne({ email }); // Retrieve the user
 
-    if (!validUser) {
-      console.log('Invalid email:', email);
-      return res.status(400).send('Invalid email or password');
+    if (!user) {
+      // User does not exist, return an error message
+      return res.status(404).send('User does not exist. Please proceed to sign up.');
     }
 
-    const validPassword = await bcrypt.compare(password, validUser.hashed_password);
+    const isPasswordValid = await bcrypt.compare(password, user.hashed_password);
 
-    if (validPassword) {
-      const token = jwt.sign(validUser, email, {
-        expiresIn: '12h',
-      });
-
-
-      res.status(201).json({ token, userId: validUser.user_id });
-    } else {
-      console.log('Invalid password for email:', email);
-      res.status(400).send('Invalid email or password');
+    if (!isPasswordValid) {
+      // Password is incorrect, return an error message
+      return res.status(401).send('Incorrect password. Please try again.');
     }
+
+    // Password is correct, generate and send the authentication token
+    const token = jwt.sign({ userId: user.user_id }, email, {
+      expiresIn: '12h',
+    });
+
+    res.status(200).json({ token, userId: user.user_id });
   } catch (err) {
-    console.error('Error:', err);
-    res.status(500).send(`An error occurred: ${err.message}`);
+    console.error(err);
+    res.status(500).send('Internal Server Error');
   } finally {
     await client.close();
   }
@@ -289,7 +291,7 @@ app.post('/message', async (req, res) => {
   const client = new MongoClient(uri);
   const message = req.body.message;
 
-  //console.log("message o be inserted is here:", message);
+  //console.log("message to be inserted is here:", message);
 
   try {
     await client.connect();

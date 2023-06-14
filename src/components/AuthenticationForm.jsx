@@ -12,12 +12,12 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
 
   let navigate = useNavigate();
 
-  console.log(email, password, confirmPassword);
+  //console.log(email, password, confirmPassword);
 
   const handleClick = () => {
     setShowAuth(false);
   };
-
+  /************ Handle form submit **************/
   const submitFunc = async (e) => {
     e.preventDefault();
     try {
@@ -28,20 +28,38 @@ const AuthenticationForm = ({ setShowAuth, isSignup }) => {
       const url = isSignup ? 'signup' : 'login';
       const response = await axios.post(`http://localhost:8888/${url}`, {
         email,
-        password
+        password,
       });
-
-      setCookie('AuthToken', response.data.token);
-      setCookie('UserId',response.data.userId);
-      const success = response.status === 201;
-
-      if (success && isSignup) navigate('/profile');
-      if (success && !isSignup) navigate ('/dashboard');
-
-      window.location.reload();  
-
+  
+      if (response.status === 200 || response.status === 201) {
+        setCookie('AuthToken', response.data.token);
+        setCookie('UserId', response.data.userId);
+  
+        if (isSignup) {
+          navigate('/profile');
+        } else {
+          navigate('/dashboard');
+        }
+        window.location.reload();
+      } else {
+        setError('An error occurred. Please try again.');
+      }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        // Server responded with an error
+        if (error.response.status === 404) {
+          setError('User does not exist. Please proceed to sign up.');
+        } else if (error.response.status === 401) {
+          setError('Incorrect password. Please try again.');
+         } else if (error.response.status === 409) {
+            setError('User already exists. Please proceed to login.');
+        } else {
+          setError('An error occurred. Please try again.');
+        }
+      } else {
+        // Request failed or network error
+        setError('An error occurred. Please check your internet connection and try again.');
+      }
     }
   };
 
