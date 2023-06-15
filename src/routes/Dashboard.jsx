@@ -27,8 +27,10 @@ const Dashboard = () => {
         additional_info: '',
         matches: []
     });
-    const [matchedUsers, setMatchedUsers] = useState(null)
-    const [lastDirection, setLastDirection] = useState()
+    const [matchedUsers, setMatchedUsers] = useState(null);
+    const [lastDirection, setLastDirection] = useState();
+    const [swipedUsers, setSwipedUsers] = useState([]);
+    
 
     const getUser = async () => {
         try {
@@ -53,7 +55,6 @@ const Dashboard = () => {
 
     useEffect(() => {
         getUser()
-
     }, [])
 
     useEffect(() => {
@@ -61,6 +62,7 @@ const Dashboard = () => {
             getMatchedUsers()
         }
     }, [user])
+      
 
     const updateMatches = async (matchedUserId) => {
         try {
@@ -69,7 +71,6 @@ const Dashboard = () => {
                 matchedUserId
             })
             getUser();
-
         } catch (err) {
             console.log("Error", err);
         }
@@ -86,9 +87,7 @@ const Dashboard = () => {
         setLastDirection(direction);
     }
 
-    const outOfFrame = (name) => {
-        console.log(name + ' left the screen!')
-    }
+    
 
     const matchedUserIds = user?.matches?.map(({ user_id }) => user_id).concat(userId) || [];
 
@@ -105,7 +104,7 @@ const Dashboard = () => {
                     <MsgContainer user={user} />
                     <div className="movetoNext">
                         <div className="cardContanier">
-                            {filteredCityUsers && filteredCityUsers.length > 0 ? (
+                            {filteredCityUsers && (filteredCityUsers.length > 0) ? (
                                 filteredCityUsers.map((matchedUser) => (
                                     <TinderCard
                                         className="swipe"
@@ -153,8 +152,7 @@ const Dashboard = () => {
     );
 };
 export default Dashboard;
-
-
+//previous code for tinder card display
 /*  return (
         <div>
             {user &&
