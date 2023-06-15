@@ -131,7 +131,7 @@ app.get('/user', async (req, res) => {
 
 
 /************************ ADD MATCH ************** */
-app.put('/addmatch', async (req, res) => {
+/*app.put('/addmatch', async (req, res) => {
   const client = new MongoClient(uri);
   const { userId, matchedUserId } = req.body;
 
@@ -151,7 +151,36 @@ app.put('/addmatch', async (req, res) => {
     await client.close();
   }
 });
+*/
+app.put('/addmatch', async (req, res) => {
+  const client = new MongoClient(uri);
+  const { userId, matchedUserId } = req.body;
 
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    const query = { user_id: userId };
+    const updateDocument = {
+      $push: { matches: { user_id: matchedUserId } }
+    };
+
+    const result = await users.updateOne(query, updateDocument);
+
+    if (result.modifiedCount === 1) {
+      // Match added successfully, retrieve the updated user document
+      const updatedUser = await users.findOne(query);
+      res.send(updatedUser);
+    } else {
+      res.status(500).send('Failed to add match.');
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('An error occurred.');
+  } finally {
+    await client.close();
+  }
+});
 
 
 /************************Get all users ************** */
@@ -214,25 +243,8 @@ app.get('/profiledata/:userId', async (req, res) => {
 
 /************************Get matched users ************** */
 
+
 app.get('/matched-users', async (req, res) => {
-  const client = new MongoClient(uri);
-  const userCity = req.query.city.toLowerCase();
-
-  try {
-    await client.connect();
-    const database = client.db('playpal-data');
-    const users = database.collection('users');
-    // options object with a collation property. The locale: 'en' specifies the collation locale as English, and strength: 2 specifies that the comparison should be case-insensitive
-    const query = { show_matches: { $eq: userCity } };
-    const options = { collation: { locale: 'en', strength: 2 } };
-    const listOfMatchedUsers = await users.find(query, options).toArray();
-    res.json(listOfMatchedUsers);
-  } finally {
-    await client.close();
-  }
-});
-
-/*app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);
   const userCity = req.query.city;
 
@@ -252,7 +264,7 @@ app.get('/matched-users', async (req, res) => {
   }
 }
 )
-*/
+
 /************************GET PICTURES OF PROFILES************** */
 
 // Create a multer instance with the desired configuration
