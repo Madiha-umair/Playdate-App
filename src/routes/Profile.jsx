@@ -20,7 +20,6 @@ const profile = () => {
     interest: [],
     availability: [],
     additional_info: '',
-    matches: [],
   });
 
   let navigate = useNavigate();

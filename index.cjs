@@ -45,6 +45,8 @@ app.post('/signup', async (req, res) => {
       user_id: uniqueUserId,
       email: filteredEmail,
       hashed_password: encryptedPassword,
+      //this is second method to make matches an array in db
+      //matches: [],
     };
 
     const newUser = await users.insertOne(data);
@@ -114,6 +116,10 @@ app.get('/user', async (req, res) => {
     const users = database.collection('users');
     const query = { user_id: userId };
     const userData = await users.findOne(query);
+
+    //this is one way to store matches as an array in database
+    //as matches is empty array and not getting input from client side, so better to define it server side as an array
+    if(!Array.isArray(userData.matches)) userData.matches = [];
 
     res.send(userData);   // sending response of 'userdata' as an objec
     //console.log("this is user data" , userData)
@@ -274,7 +280,7 @@ app.put('/user', upload.single('picture'), async (req, res) => {
           interest: req.body.interest,
           availability: req.body.availability,
           additional_info: req.body.additional_info,
-          matches: req.body.matches
+          
         },
       };
 

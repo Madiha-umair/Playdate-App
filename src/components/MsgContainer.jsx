@@ -15,19 +15,16 @@ const MsgContainer = ({ user }) => {
         <button className="option" onClick={() => setSelectedUser(null)}>Matches</button>
         <button className="option" disabled={!selectedUser}>Message</button>
       </div>
-    
-      {user.matches.length > 1 ? ( // condition if no matches found
-        !selectedUser ? (
-          <MatchesDisplay matches={user.matches} setSelectedUser={setSelectedUser} />
-        ) : (
-          <MsgDisplay user={user} selectedUser={selectedUser} />
-        )
+
+      { !selectedUser ? (
+        <MatchesDisplay matches={user.matches} setSelectedUser={setSelectedUser} />
       ) : (
-        <div className="no-matches-message">Sorry, no matches at this time!</div>
-      )}
+        <MsgDisplay user={user} selectedUser={selectedUser} />
+      ) }
     </div>
   );
 };
+
 
 export default MsgContainer;
 

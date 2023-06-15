@@ -30,15 +30,15 @@ const ProfileData = () => {
     <div>
       <h1>User Profile</h1>
       <h2>Name: {user.child_name}</h2>
-     <p>picture:{user.picture.replace(/\\/g, '/')}</p>  
-     <img src={user.picture} alt = { "profile picture of" + user.child_name}   />
-     <img src={user.picture.replace(/\\/g, '/')} alt = { "profile picture of" + user.child_name}   />
-     <img src={`./${user.picture.replace(/\\/g, '/')}`} alt={`Profile picture of ${user.child_name}`} />
+     
+      <img src={"http://localhost:8888/" + user.picture} alt={"profile picture of" + user.child_name} style={{ width: "300px", height: "300px" }} />
+
+  
 
      <p>age: {user.age}</p>
      <p>gender:{user.gender}</p> 
      <p>city:{user.city}</p> 
-     <p>country:{user.country}</p> 
+     <p>country:{user.country}</p>  
      <p>language:{user.language}</p>  
      <p>other_language:{user.other_language}</p> 
      <p>show_matches: {user.show_matches}</p>
