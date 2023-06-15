@@ -1,7 +1,3 @@
-import Nav from "../components/Nav";
-import AuthenticationForm from '../components/AuthenticationForm'
-
-
 export default function Terms() {
     return (
         <div>

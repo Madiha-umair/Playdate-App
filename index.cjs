@@ -213,9 +213,28 @@ app.get('/profiledata/:userId', async (req, res) => {
 });
 
 /************************Get matched users ************** */
+
 app.get('/matched-users', async (req, res) => {
   const client = new MongoClient(uri);
-  const city = req.query.city;
+  const userCity = req.query.city.toLowerCase();
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const users = database.collection('users');
+    // options object with a collation property. The locale: 'en' specifies the collation locale as English, and strength: 2 specifies that the comparison should be case-insensitive
+    const query = { show_matches: { $eq: userCity } };
+    const options = { collation: { locale: 'en', strength: 2 } };
+    const listOfMatchedUsers = await users.find(query, options).toArray();
+    res.json(listOfMatchedUsers);
+  } finally {
+    await client.close();
+  }
+});
+
+/*app.get('/matched-users', async (req, res) => {
+  const client = new MongoClient(uri);
+  const userCity = req.query.city;
 
  // console.log("this is city value:", city);
 
@@ -223,7 +242,8 @@ app.get('/matched-users', async (req, res) => {
     await client.connect();
     const database = client.db('playpal-data');
     const users = database.collection('users');
-    const query = { show_matches: { $eq: city } };
+
+    const query = { show_matches: { $eq: userCity } };
     const listOfMatchedUsers = await users.find(query).toArray();
     res.json(listOfMatchedUsers);
     // console.log(" List of matched users are:",listOfMatchedUsers );
@@ -232,7 +252,7 @@ app.get('/matched-users', async (req, res) => {
   }
 }
 )
-
+*/
 /************************GET PICTURES OF PROFILES************** */
 
 // Create a multer instance with the desired configuration

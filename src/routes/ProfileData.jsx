@@ -27,7 +27,7 @@ const ProfileData = () => {
   return (
     <div>
       <h1>User Profile</h1>
-      <h2>Name: {user.child_name}</h2>
+      <p>Name: {user.child_name}</p>
       <img src={"http://localhost:8888/" + user.picture} alt={"profile picture of" + user.child_name} style={{ width: "300px", height: "300px" }} />
       <p>age: {user.age}</p>
       <p>gender:{user.gender}</p>
