@@ -1,23 +1,3 @@
-/*import React from 'react';
-
-import Nav from "./Nav";
-import MsgInput from './MsgInput';
-
-export default function MsgDisplay({ user, selectedUser }) {
-  return (
-    <div className="msgDisplay">
-
-      <MsgInput />
-      <div className="msgDisplay">
-        <Nav />
-      </div>
-    </div>
-  );
-}
-
-*/
-
-
 import Messages from './Messages';
 import MsgInput from './MsgInput';
 import axios from 'axios';
@@ -92,6 +72,4 @@ export default function MsgDisplay({ user, selectedUser }) {
       
     </div>
   );
-  
-   
 }

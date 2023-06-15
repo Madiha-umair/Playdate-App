@@ -7,7 +7,6 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
-
     const [cookies, setCookie, removeCookie] = useCookies(['user'])
     const userId = cookies.UserId;
     //const [user, setUser] = useState(null);
@@ -101,58 +100,60 @@ const Dashboard = () => {
 
     return (
         <div>
-          {user && (
-            <div className="dashboard">
-              <MsgContainer user={user} />
-              <div className="movetoNext">
-                <div className="cardContanier">
-                  {filteredCityUsers && filteredCityUsers.length > 0 ? (
-                    filteredCityUsers.map((matchedUser) => (
-                      <TinderCard
-                        className="swipe"
-                        key={matchedUser.user_id}
-                        onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
-                        onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}
-                      >
-                        <Link to={`/profiledata/${matchedUser.user_id}`}>
-                          <div
-                            style={{
-                              backgroundImage: matchedUser.picture
-                                ? `url(${matchedUser.picture.replace(/\\/g, '/')})`
-                                : 'none',
-                            }}
-                            className="card"
-                          >
-                            <h3>{matchedUser.child_name}</h3>
-                          </div>
-                        </Link>
-                      </TinderCard>
-                    ))
-                  ) : (
-                    <div
-                      className="no-matches-message"
-                      style={{
-                        width: "300px",
-                        height: "300px",
-                        backgroundColor: "white",
-                        margin: "0 0 0 300px",
-                      }}
-                    >
-                      Sorry, no matches at this time!
+            {user && (
+                <div className="dashboard">
+                    <MsgContainer user={user} />
+                    <div className="movetoNext">
+                        <div className="cardContanier">
+                            {filteredCityUsers && filteredCityUsers.length > 0 ? (
+                                filteredCityUsers.map((matchedUser) => (
+                                    <TinderCard
+                                        className="swipe"
+                                        key={matchedUser.user_id}
+                                        onSwipe={(dir) => swiped(dir, matchedUser.user_id)}
+                                        onCardLeftScreen={() => outOfFrame(matchedUser.child_name)}
+                                    >
+                                         <div
+                                                style={{
+                                                    backgroundImage: matchedUser.picture
+                                                        ? `url(${matchedUser.picture.replace(/\\/g, '/')})`
+                                                        : 'none',
+                                                }}
+                                                className="card"
+                                            >
+                                                </div>
+                                        <Link to={`/profiledata/${matchedUser.user_id}`}>
+                                           
+                                                <h3>{matchedUser.child_name}</h3>
+                                            
+                                        </Link>
+                                    </TinderCard>
+                                ))
+                            ) : (
+                                <div
+                                    className="no-matches-message"
+                                    style={{
+                                        width: "300px",
+                                        height: "300px",
+                                        backgroundColor: "white",
+                                        margin: "0 0 0 300px",
+                                    }}
+                                >
+                                    Sorry, no matches at this time!
+                                </div>
+                            )}
+                            <div className="swipeInfo">
+                                {lastDirection ? <p>you swiped {lastDirection}</p> : <p />}
+                            </div>
+                        </div>
                     </div>
-                  )}
-                  <div className="swipeInfo">
-                    {lastDirection ? <p>you swiped {lastDirection}</p> : <p />}
-                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+            )}
         </div>
-      );
-    };
-    export default Dashboard;
-      
+    );
+};
+export default Dashboard;
+
 
 /*  return (
         <div>
