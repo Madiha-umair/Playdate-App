@@ -367,6 +367,45 @@ app.post('/message', async (req, res) => {
   }
 });
 
+/************************ Create Playdate **************/
+app.post('/create-playdate', async (req, res) => {
+  const client = new MongoClient(uri); 
+  const { userId, matchedUserId } = req.body;
+  console.log("this is userId  ", userId, matchedUserId);
+
+  try {
+    await client.connect();
+    const database = client.db('playpal-data');
+    const playdates = database.collection('playdates');
+    const newPlaydate = {
+      userId,
+      matchedUserId,
+      date: new Date(),
+    };
+    const result = await playdates.insertOne(newPlaydate);
+
+    console.log("this is result ", result);
+    console.log("this is insertedCount ", result.insertedCount);
+
+    //if (result.insertedCount === 1) { // not working with this
+
+      const insertedDate = await playdates.findOne(newPlaydate);
+     // res.send(insertedDate);
+
+     console.log("this is insertedDate ", insertedDate);
+      console.log("this is newPlaydate ", newPlaydate);
+      res.status(200).json(newPlaydate);
+   
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    await client.close();
+  }
+});
+
+
+
 app.listen(PORT, function () {
   console.log('Server listening on port ' + PORT);
 });
