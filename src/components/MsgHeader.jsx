@@ -19,7 +19,7 @@ export default function MsgHeader ({user}) {
             </div>
             <h3>{user.child_name}</h3>
         </div>
-            <i className="logoutIcon" onClick={logout}>GO BACK [X]</i>
+            <i className="logoutIcon" onClick={logout}>Logout [X]</i>
       </div>
     );
   }

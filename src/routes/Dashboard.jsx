@@ -80,7 +80,7 @@ const Dashboard = () => {
 
     const swiped = (direction, swipedUserId) => {
 
-        if (direction === 'right') {
+        if (direction === 'right' || direction === 'up') {
             updateMatches(swipedUserId);
         }
 
@@ -120,12 +120,11 @@ const Dashboard = () => {
                                                 }}
                                                 className="card"
                                             >
-                                                </div>
-                                        <Link to={`/profiledata/${matchedUser.user_id}`}>
-                                           
+                                                <Link to={`/profiledata/${matchedUser.user_id}`}>
                                                 <h3>{matchedUser.child_name}</h3>
-                                            
                                         </Link>
+                                                </div>
+                                        
                                     </TinderCard>
                                 ))
                             ) : (
